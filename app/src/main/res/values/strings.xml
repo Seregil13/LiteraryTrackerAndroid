@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Literary Tracker</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_lightnovel_list">LightNovels</string>
+    <string name="title_lightnovel_detail">LightNovel Detail</string>
+</resources>

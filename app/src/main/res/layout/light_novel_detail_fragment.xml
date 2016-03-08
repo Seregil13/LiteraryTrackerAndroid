@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="5dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:id="@+id/title"
+        android:text="Peerless Martial God"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        />
+    
+    <TextView
+        android:id="@+id/author"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Blue Moon"
+        android:textAlignment="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+    <TextView
+        android:id="@+id/translatorSite"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="wuxiaworld.com"
+        android:textAlignment="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+    <TextView
+        android:id="@+id/completionStatus"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="in progress"
+        android:textAlignment="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"
+        android:text="description"/>
+
+
+    <!---->
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textAppearance="?android:attr/textAppearanceLarge"-->
+        <!--android:text="Peerless Martial God"-->
+        <!--android:id="@+id/title"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginTop="53dp" />-->
+
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
+        <!--android:text="blah blah blah blahblah blahblah blahblah blahblah blahblah blahblah blahblah blahblah blahblah blah"-->
+        <!--android:id="@+id/description"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:layout_marginBottom="59dp" />-->
+
+
+    <!--title VARCHAR(50) NOT NULL,-->
+    <!--author VARCHAR(50),-->
+    <!--description VARCHAR(5000),-->
+    <!--completed BOOLEAN,-->
+    <!--translator_site VARCHAR(255) NOT NULL,-->
+</LinearLayout>
