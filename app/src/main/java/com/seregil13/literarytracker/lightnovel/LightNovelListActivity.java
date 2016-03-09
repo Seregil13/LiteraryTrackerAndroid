@@ -9,15 +9,20 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+
 import com.seregil13.literarytracker.R;
-import com.seregil13.literarytracker.network.FetchListTask;
 import com.seregil13.literarytracker.network.ServerInfo;
-import com.seregil13.literarytracker.network.TaskListener;
+import com.seregil13.literarytracker.network.VolleySingleton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +39,7 @@ import java.util.List;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class LightNovelListActivity extends AppCompatActivity implements TaskListener {
+public class LightNovelListActivity extends AppCompatActivity {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -56,13 +61,15 @@ public class LightNovelListActivity extends AppCompatActivity implements TaskLis
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        new FetchListTask(this, ServerInfo.LiteraryType.LIGHT_NOVEL).execute();
+        /* Use the volley library to send a request */
+        JsonArrayRequest json = new JsonArrayRequest(Request.Method.GET, ServerInfo.getListUrl(ServerInfo.LiteraryType.LIGHT_NOVEL), null, onSuccess, onError);
+        VolleySingleton.getInstance(this.getApplicationContext()).addToRequestQueue(json);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG) // Make it go to new ln page
                         .setAction("Action", null).show();
             }
         });
@@ -86,23 +93,32 @@ public class LightNovelListActivity extends AppCompatActivity implements TaskLis
         recyclerView.setAdapter(adapter);
     }
 
-    @Override
-    public void onTaskCompleted(String result) {
-        try {
-            JSONArray novels = new JSONArray(result);
+    Response.Listener<JSONArray> onSuccess = new Response.Listener<JSONArray>() {
+        @Override
+        public void onResponse(JSONArray response) {
             List<LightNovelListContent.LightNovel> list = new ArrayList<>();
 
-            for (int i = 0; i < novels.length(); ++i) {
-                JSONObject novel = novels.getJSONObject(i);
-                list.add(new LightNovelListContent.LightNovel(novel.getInt(JSON_ID), novel.getString(JSON_TITLE), novel.getString(JSON_AUTHOR)));
+            try {
+                for (int i = 0; i < response.length(); ++i) {
+                    JSONObject novel = response.getJSONObject(i);
+                    list.add(new LightNovelListContent.LightNovel(novel.getInt(JSON_ID), novel.getString(JSON_TITLE), novel.getString(JSON_AUTHOR)));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
-            this.adapter.updateNovelList(list);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+            adapter.updateNovelList(list);
         }
-    }
+
+    };
+
+    Response.ErrorListener onError = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            Log.d("LN LIST ACTIVITY", error.getMessage());
+        }
+    };
+
 
     public class SimpleItemRecyclerViewAdapter extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
@@ -129,7 +145,8 @@ public class LightNovelListActivity extends AppCompatActivity implements TaskLis
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putString(LightNovelDetailFragment.ARG_LIGHTNOVEL_ID, String.valueOf(holder.mItem.id));
+                        arguments.putInt(LightNovelDetailFragment.ARG_LIGHTNOVEL_ID, holder.mItem.id);
+                        arguments.putString(LightNovelDetailFragment.ARG_LIGHTNOVEL_TITLE, holder.mItem.title);
                         LightNovelDetailFragment fragment = new LightNovelDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -139,6 +156,8 @@ public class LightNovelListActivity extends AppCompatActivity implements TaskLis
                         Context context = v.getContext();
                         Intent intent = new Intent(context, LightNovelDetailActivity.class);
                         intent.putExtra(LightNovelDetailFragment.ARG_LIGHTNOVEL_ID, holder.mItem.id);
+                        Log.d("LNListActivity", holder.mItem.title);
+                        intent.putExtra(LightNovelDetailFragment.ARG_LIGHTNOVEL_TITLE, holder.mItem.title);
 
                         context.startActivity(intent);
                     }

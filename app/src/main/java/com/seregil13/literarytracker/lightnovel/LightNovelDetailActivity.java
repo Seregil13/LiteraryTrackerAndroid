@@ -56,13 +56,11 @@ public class LightNovelDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(LightNovelDetailFragment.ARG_LIGHTNOVEL_ID,
-                    getIntent().getStringExtra(LightNovelDetailFragment.ARG_LIGHTNOVEL_ID));
+            arguments.putInt(LightNovelDetailFragment.ARG_LIGHTNOVEL_ID, getIntent().getIntExtra(LightNovelDetailFragment.ARG_LIGHTNOVEL_ID, 1));
+            arguments.putString(LightNovelDetailFragment.ARG_LIGHTNOVEL_TITLE, getIntent().getStringExtra(LightNovelDetailFragment.ARG_LIGHTNOVEL_TITLE));
             LightNovelDetailFragment fragment = new LightNovelDetailFragment();
             fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.lightnovel_detail_container, fragment)
-                    .commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.lightnovel_detail_container, fragment).commit();
         }
     }
 

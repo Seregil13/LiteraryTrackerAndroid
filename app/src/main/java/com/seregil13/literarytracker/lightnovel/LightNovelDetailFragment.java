@@ -1,7 +1,6 @@
 package com.seregil13.literarytracker.lightnovel;
 
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,22 +10,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.seregil13.literarytracker.R;
-import com.seregil13.literarytracker.lightnovel.dummy.DummyContent;
-import com.seregil13.literarytracker.network.FetchDetailTask;
 import com.seregil13.literarytracker.network.ServerInfo;
-import com.seregil13.literarytracker.network.TaskListener;
+import com.seregil13.literarytracker.network.VolleySingleton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 /**
  * A fragment representing a single LightNovel detail screen.
@@ -34,7 +27,10 @@ import java.net.URL;
  * in two-pane mode (on tablets) or a {@link LightNovelDetailActivity}
  * on handsets.
  */
-public class LightNovelDetailFragment extends Fragment implements TaskListener {
+public class LightNovelDetailFragment extends Fragment {
+
+    public static final String TAG = "LNDetailFragment";
+
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -50,6 +46,8 @@ public class LightNovelDetailFragment extends Fragment implements TaskListener {
     private static final String JSON_TRANSLATOR_SITE = "translatorSite";
     private static final String JSON_GENRES = "genres";
 
+    private static final ServerInfo.LiteraryType TYPE = ServerInfo.LiteraryType.LIGHT_NOVEL;
+
     private TextView mTitleTextView;
     private TextView mAuthorTextView;
     private TextView mCompletedTextView;
@@ -60,8 +58,7 @@ public class LightNovelDetailFragment extends Fragment implements TaskListener {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public LightNovelDetailFragment() {
-    }
+    public LightNovelDetailFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,12 +66,19 @@ public class LightNovelDetailFragment extends Fragment implements TaskListener {
 
         if (getArguments().containsKey(ARG_LIGHTNOVEL_ID)) {
 
-            new FetchDetailTask(this.getContext(), ServerInfo.LiteraryType.LIGHT_NOVEL).execute(String.valueOf(getArguments().getInt(ARG_LIGHTNOVEL_ID)));
+            int id = getArguments().getInt(ARG_LIGHTNOVEL_ID);
+            String title = getArguments().getString(ARG_LIGHTNOVEL_TITLE, "Light Novel");
+
+            Log.d(TAG, title);
+
+            /* Sends a request for a json object via volley */
+            JsonObjectRequest json = new JsonObjectRequest(Request.Method.GET, ServerInfo.getDetailUrl(TYPE, String.valueOf(id)), null, onSuccess, onError);
+            VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(json);
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(getArguments().getString(ARG_LIGHTNOVEL_TITLE, "Light Novel"));
+                appBarLayout.setTitle(title);
             }
         }
     }
@@ -92,19 +96,32 @@ public class LightNovelDetailFragment extends Fragment implements TaskListener {
         return view;
     }
 
-    @Override
-    public void onTaskCompleted(String result) {
-
-        try {
-            JSONObject novel = new JSONObject(result);
-
-            mTitleTextView.setText(novel.getString(JSON_TITLE));
-            mAuthorTextView.setText(novel.getString(JSON_AUTHOR));
-            mCompletedTextView.setText(novel.getString(JSON_COMPLETED));
-            mDescriptionTextView.setText(novel.getString(JSON_DESCRIPTION));
-            mTranslatorSiteTextView.setText(novel.getString(JSON_TRANSLATOR_SITE));
-        } catch (JSONException e) {
-            e.printStackTrace();
+    /**
+     * The callback function for a successful network query
+     */
+    Response.Listener<JSONObject> onSuccess = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            try {
+                mTitleTextView.setText(response.getString(JSON_TITLE));
+                mAuthorTextView.setText(response.getString(JSON_AUTHOR));
+                mCompletedTextView.setText(response.getString(JSON_COMPLETED));
+                mDescriptionTextView.setText(response.getString(JSON_DESCRIPTION));
+                mTranslatorSiteTextView.setText(response.getString(JSON_TRANSLATOR_SITE));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
-    }
+
+    };
+
+    /**
+     * The callback function for a failed network query
+     */
+    Response.ErrorListener onError = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            Log.d("LN LIST ACTIVITY", error.getMessage());
+        }
+    };
 }
