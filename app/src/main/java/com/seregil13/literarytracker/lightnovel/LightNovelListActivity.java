@@ -19,7 +19,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-
 import com.seregil13.literarytracker.R;
 import com.seregil13.literarytracker.network.ServerInfo;
 import com.seregil13.literarytracker.network.VolleySingleton;
@@ -156,7 +155,6 @@ public class LightNovelListActivity extends AppCompatActivity {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, LightNovelDetailActivity.class);
                         intent.putExtra(LightNovelDetailFragment.ARG_LIGHTNOVEL_ID, holder.mItem.id);
-                        Log.d("LNListActivity", holder.mItem.title);
                         intent.putExtra(LightNovelDetailFragment.ARG_LIGHTNOVEL_TITLE, holder.mItem.title);
 
                         context.startActivity(intent);
