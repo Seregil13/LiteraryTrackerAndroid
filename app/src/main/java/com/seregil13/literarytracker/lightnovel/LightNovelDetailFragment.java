@@ -21,6 +21,7 @@ import com.seregil13.literarytracker.R;
 import com.seregil13.literarytracker.network.ServerInfo;
 import com.seregil13.literarytracker.network.VolleySingleton;
 import com.seregil13.literarytracker.util.LiteraryTrackerUtils;
+import com.seregil13.literarytracker.views.WrappedLinearLayout;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -58,7 +59,7 @@ public class LightNovelDetailFragment extends Fragment {
     private TextView mCompletedTextView;
     private TextView mDescriptionTextView;
     private TextView mTranslatorSiteTextView;
-    private LinearLayout mGenresLayout;
+    private WrappedLinearLayout mGenresLayout;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -97,7 +98,7 @@ public class LightNovelDetailFragment extends Fragment {
         mCompletedTextView = (TextView) view.findViewById(R.id.completionStatus);
         mDescriptionTextView = (TextView) view.findViewById(R.id.description);
         mTranslatorSiteTextView = (TextView) view.findViewById(R.id.translatorSite);
-        mGenresLayout = (LinearLayout) view.findViewById(R.id.genres);
+        mGenresLayout = (WrappedLinearLayout) view.findViewById(R.id.genres);
 
         return view;
     }
@@ -114,14 +115,28 @@ public class LightNovelDetailFragment extends Fragment {
                 mDescriptionTextView.setText(String.format("%s", response.getString(JSON_DESCRIPTION)));
                 mTranslatorSiteTextView.setText(String.format("%s", response.getString(JSON_TRANSLATOR_SITE)));
 
-                layoutGenres(response.getJSONArray(JSON_GENRES));
+                ArrayList<String> genres = LiteraryTrackerUtils.jsonArrayToList(response.getJSONArray(JSON_GENRES));
+                for (String genre : genres) {
+
+                    /* Creates a textview to hold the genre */
+                    TextView genreTV = new TextView(getContext());
+                    genreTV.setText(genre);
+                    genreTV.setBackgroundResource(R.drawable.border);
+                    genreTV.setTextColor(Color.WHITE);
+                    genreTV.setPadding(15,10,15,10);
+
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    params.setMargins(10,10,10,10);
+                    genreTV.setLayoutParams(params);
+
+                    mGenresLayout.addView(genreTV);
+                }
 
                 ((CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout)).setTitle(response.getString(JSON_TITLE));
             } catch (Exception e) {
-                e.printStackTrace();
+                e.printStackTrace(); // TODO: Handle exceptions better
             }
         }
-
     };
 
     /**
@@ -133,51 +148,4 @@ public class LightNovelDetailFragment extends Fragment {
             Log.d(TAG, error.getMessage());
         }
     };
-
-    /* TODO: Move to specialized widget WrappedLinearLayout to handle all of this functionality */
-    private void layoutGenres(JSONArray json) throws Exception {
-
-        ArrayList<String> genres = LiteraryTrackerUtils.jsonArrayToList(json);
-
-        Point screenSize = new Point();
-        getActivity().getWindowManager().getDefaultDisplay().getSize(screenSize);
-        int maxWidth = screenSize.x - 10;
-
-        if (genres.size() > 0) {
-            LinearLayout layout = new LinearLayout(getContext());
-            layout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-            layout.setOrientation(LinearLayout.HORIZONTAL);
-
-            int widthSoFar = 0; // Initializes the width to start at zero
-            for (String genre : genres) {
-                TextView genreTV = new TextView(getContext());
-                genreTV.setText(genre);
-                genreTV.setBackgroundResource(R.drawable.border);
-                genreTV.setTextColor(Color.WHITE);
-                genreTV.setPadding(15,10,15,10);
-
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                params.setMargins(10,10,10,10);
-                genreTV.setLayoutParams(params);
-
-                genreTV.measure(0, 0);
-                widthSoFar += genreTV.getMeasuredWidth();
-
-                if (widthSoFar >= maxWidth) {
-                    mGenresLayout.addView(layout);
-
-                    layout = new LinearLayout(getContext());
-                    layout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                    layout.setOrientation(LinearLayout.HORIZONTAL);
-
-                    layout.addView(genreTV);
-                    widthSoFar = genreTV.getMeasuredWidth();
-                } else {
-                    layout.addView(genreTV);
-                }
-            }
-
-            mGenresLayout.addView(layout);
-        }
-    }
 }

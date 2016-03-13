@@ -1,7 +1,6 @@
 package com.seregil13.literarytracker.util;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.util.ArrayList;
 
@@ -9,7 +8,7 @@ import java.util.ArrayList;
  * A utility class to handle common operations.
  *
  * @author Alec
- * @since 03 12, 2016
+ * @since March 12, 2016
  */
 public class LiteraryTrackerUtils {
 
@@ -18,7 +17,6 @@ public class LiteraryTrackerUtils {
      * Converts a {@link JSONArray} to an {@link ArrayList} of strings
      * @param jsonArray A JSON array that contains strings
      * @return A list of the strings contained in the JSON array
-     * @throws JSONException
      */
     public static ArrayList<String> jsonArrayToList(JSONArray jsonArray) throws Exception {
 
