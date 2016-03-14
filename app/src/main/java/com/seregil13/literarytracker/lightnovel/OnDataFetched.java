@@ -24,30 +24,13 @@
 
 package com.seregil13.literarytracker.lightnovel;
 
+import java.util.List;
 
 /**
- *
  * @author Alec
- * @since March 6, 2016
+ * @since March 13, 2016
  */
-public class LightNovelListContent {
+public interface OnDataFetched {
 
-
-
-    public static class LightNovel {
-        public final int id;
-        public final String title;
-        public final String author;
-
-        public LightNovel(int id, String title, String author) {
-            this.id = id;
-            this.title = title;
-            this.author = author;
-        }
-
-        @Override
-        public String toString() {
-            return title;
-        }
-    }
+    void setData(int id, String title, String author, String description, String completed, String translatorSite, List<String> genres);
 }

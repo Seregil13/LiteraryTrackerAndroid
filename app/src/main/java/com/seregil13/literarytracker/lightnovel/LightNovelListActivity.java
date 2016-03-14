@@ -1,3 +1,27 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016 Alec Rietman
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.seregil13.literarytracker.lightnovel;
 
 import android.content.Context;
@@ -22,6 +46,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.seregil13.literarytracker.R;
 import com.seregil13.literarytracker.network.ServerInfo;
 import com.seregil13.literarytracker.network.VolleySingleton;
+import com.seregil13.literarytracker.util.JsonKeys;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,16 +65,13 @@ import java.util.List;
  */
 public class LightNovelListActivity extends AppCompatActivity {
 
+    private static final String TAG = "LN_LISTACTIVITY";
+
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean mTwoPane;
-
-    private static final String JSON_ID = "id";
-    private static final String JSON_TITLE = "title";
-    private static final String JSON_AUTHOR = "author";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +90,7 @@ public class LightNovelListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG) // Make it go to new ln page
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG) // TODO Make it go to new ln page
                         .setAction("Action", null).show();
             }
         });
@@ -100,10 +122,14 @@ public class LightNovelListActivity extends AppCompatActivity {
             try {
                 for (int i = 0; i < response.length(); ++i) {
                     JSONObject novel = response.getJSONObject(i);
-                    list.add(new LightNovelListContent.LightNovel(novel.getInt(JSON_ID), novel.getString(JSON_TITLE), novel.getString(JSON_AUTHOR)));
+                    int id = novel.getInt(JsonKeys.LightNovel.ID);
+                    String title  = novel.getString(JsonKeys.LightNovel.TITLE);
+                    String author = novel.getString(JsonKeys.LightNovel.AUTHOR);
+
+                    list.add(new LightNovelListContent.LightNovel(id, title, author));
                 }
             } catch (JSONException e) {
-                e.printStackTrace();
+                e.printStackTrace(); //TODO:
             }
 
             adapter.updateNovelList(list);
@@ -114,7 +140,7 @@ public class LightNovelListActivity extends AppCompatActivity {
     Response.ErrorListener onError = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
-            Log.d("LN LIST ACTIVITY", error.getMessage());
+            Log.d(TAG, error.getMessage());
         }
     };
 

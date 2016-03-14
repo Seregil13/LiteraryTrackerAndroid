@@ -1,9 +1,35 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016 Alec Rietman
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.seregil13.literarytracker.lightnovel;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
@@ -12,13 +38,24 @@ import android.view.MenuItem;
 
 import com.seregil13.literarytracker.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * An activity representing a single LightNovel detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
  * in a {@link LightNovelListActivity}.
  */
-public class LightNovelDetailActivity extends AppCompatActivity {
+public class LightNovelDetailActivity extends AppCompatActivity implements OnDataFetched {
+
+    private int mId;
+    private String mTitle;
+    private String mAuthor;
+    private String mDescription;
+    private String mCompleted;
+    private String mTranslatorSite;
+    private List<String> mGenres;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +69,19 @@ public class LightNovelDetailActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Context context = view.getContext();
+
+                Intent intent = new Intent(context, LightNovelFormActivity.class);
+                intent.putExtra(LightNovelFormActivity.ID, mId);
+                intent.putExtra(LightNovelFormActivity.TITLE, mTitle);
+                intent.putExtra(LightNovelFormActivity.AUTHOR, mAuthor);
+                intent.putExtra(LightNovelFormActivity.DESCRIPTION, mDescription);
+                intent.putExtra(LightNovelFormActivity.COMPLETED, mCompleted);
+                intent.putExtra(LightNovelFormActivity.TRANSLATOR_SITE, mTranslatorSite);
+                intent.putStringArrayListExtra(LightNovelFormActivity.GENRES, (ArrayList<String>) mGenres);
+
+                context.startActivity(intent);
+
             }
         });
 
@@ -78,5 +126,18 @@ public class LightNovelDetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void setData(int id, String title, String author, String description, String completed, String translatorSite, List<String> genres) {
+
+        this.mId = id;
+        this.mTitle = title;
+        this.mAuthor = author;
+        this.mDescription = description;
+        this.mCompleted = completed;
+        this.mTranslatorSite = translatorSite;
+        this.mGenres = genres;
+
     }
 }

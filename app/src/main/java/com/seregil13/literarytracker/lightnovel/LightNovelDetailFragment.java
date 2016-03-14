@@ -1,6 +1,31 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016 Alec Rietman
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.seregil13.literarytracker.lightnovel;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -20,6 +45,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.seregil13.literarytracker.R;
 import com.seregil13.literarytracker.network.ServerInfo;
 import com.seregil13.literarytracker.network.VolleySingleton;
+import com.seregil13.literarytracker.util.JsonKeys;
 import com.seregil13.literarytracker.util.LiteraryTrackerUtils;
 import com.seregil13.literarytracker.views.WrappedLinearLayout;
 
@@ -27,6 +53,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A fragment representing a single LightNovel detail screen.
@@ -43,14 +70,6 @@ public class LightNovelDetailFragment extends Fragment {
     public static final String ARG_LIGHTNOVEL_TITLE = "lightnovel_title";
     public static final String ARG_LIGHTNOVEL_AUTHOR = "lightnovel_author";
 
-    /* JSON keys used in the network data */
-    private static final String JSON_TITLE = "title";
-    private static final String JSON_AUTHOR = "author";
-    private static final String JSON_DESCRIPTION = "description";
-    private static final String JSON_COMPLETED = "completed";
-    private static final String JSON_TRANSLATOR_SITE = "translatorSite";
-    private static final String JSON_GENRES = "genres";
-
     /* Defines the type of literature to be used in the network calls */
     private static final ServerInfo.LiteraryType TYPE = ServerInfo.LiteraryType.LIGHT_NOVEL;
 
@@ -60,6 +79,17 @@ public class LightNovelDetailFragment extends Fragment {
     private TextView mDescriptionTextView;
     private TextView mTranslatorSiteTextView;
     private WrappedLinearLayout mGenresLayout;
+
+    /* Values */
+    private int mId;
+    private String mTitle;
+    private String mAuthor;
+    private String mDescription;
+    private String mCompleted;
+    private String mTranslatorSite;
+    private List<String> mGenres;
+
+    private OnDataFetched mActivity;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -103,6 +133,12 @@ public class LightNovelDetailFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.mActivity = (OnDataFetched) context;
+    }
+
     /**
      * The callback function for a successful network query
      */
@@ -110,13 +146,22 @@ public class LightNovelDetailFragment extends Fragment {
         @Override
         public void onResponse(JSONObject response) {
             try {
-                mAuthorTextView.setText(response.getString(JSON_AUTHOR));
-                mCompletedTextView.setText(Boolean.parseBoolean(response.getString(JSON_COMPLETED)) ? "Completed" : "In Progress");
-                mDescriptionTextView.setText(String.format("%s", response.getString(JSON_DESCRIPTION)));
-                mTranslatorSiteTextView.setText(String.format("%s", response.getString(JSON_TRANSLATOR_SITE)));
+                mId = response.getInt(JsonKeys.LightNovel.ID);
+                mTitle = response.getString(JsonKeys.LightNovel.TITLE);
+                mAuthor = response.getString(JsonKeys.LightNovel.AUTHOR);
+                mDescription = response.getString(JsonKeys.LightNovel.DESCRIPTION);
+                mCompleted = response.getString(JsonKeys.LightNovel.COMPLETED);
+                mTranslatorSite = response.getString(JsonKeys.LightNovel.TRANSLATOR_SITE);
+                mGenres = LiteraryTrackerUtils.jsonArrayToList(response.getJSONArray(JsonKeys.LightNovel.GENRES));
 
-                ArrayList<String> genres = LiteraryTrackerUtils.jsonArrayToList(response.getJSONArray(JSON_GENRES));
-                for (String genre : genres) {
+                mActivity.setData(mId, mTitle, mAuthor, mDescription, mCompleted, mTranslatorSite, mGenres);
+
+                mAuthorTextView.setText(mAuthor);
+                mCompletedTextView.setText(Boolean.parseBoolean(mCompleted) ? "Completed" : "In Progress");
+                mDescriptionTextView.setText(mDescription);
+                mTranslatorSiteTextView.setText(mTranslatorSite);
+
+                for (String genre : mGenres) {
 
                     /* Creates a textview to hold the genre */
                     TextView genreTV = new TextView(getContext());
@@ -132,7 +177,7 @@ public class LightNovelDetailFragment extends Fragment {
                     mGenresLayout.addView(genreTV);
                 }
 
-                ((CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout)).setTitle(response.getString(JSON_TITLE));
+                ((CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout)).setTitle(mTitle);
             } catch (Exception e) {
                 e.printStackTrace(); // TODO: Handle exceptions better
             }
