@@ -22,44 +22,77 @@
   ~ SOFTWARE.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.seregil13.literarytracker.lightnovel.LightNovelEditFragment">
 
-    <EditText
-        android:id="@+id/title"
-        android:hint="@string/title"
-        android:inputType="text"
+    <LinearLayout
+        android:id="@+id/form"
+        android:layout_above="@+id/buttons"
+        android:layout_alignParentTop="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/author"
-        android:hint="@string/author"
-        android:inputType="textPersonName"
+        <EditText
+            android:id="@+id/title"
+            android:hint="@string/title"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditTextl
+            android:id="@+id/author"
+            android:hint="@string/author"
+            android:inputType="textPersonName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <CheckBox
+            android:id="@+id/completionStatus"
+            android:text="@string/completed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/translatorSite"
+            android:hint="@string/translatorSite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/description"
+            android:hint="@string/description"
+            android:inputType="textMultiLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/buttons"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        style="?android:buttonBarStyle">
 
-    <CheckBox
-        android:id="@+id/completionStatus"
-        android:text="@string/completed"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <Button android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/cancel"
+            style="?android:buttonBarButtonStyle"/>
 
-    <EditText
-        android:id="@+id/description"
-        android:hint="@string/description"
-        android:inputType="textMultiLine"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <Button android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/save"
+            style="?android:buttonBarButtonStyle"/>
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
-
-</LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

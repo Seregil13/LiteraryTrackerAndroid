@@ -27,7 +27,6 @@ package com.seregil13.literarytracker.lightnovel;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
@@ -49,10 +48,8 @@ import com.seregil13.literarytracker.util.JsonKeys;
 import com.seregil13.literarytracker.util.LiteraryTrackerUtils;
 import com.seregil13.literarytracker.views.WrappedLinearLayout;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -65,11 +62,6 @@ public class LightNovelDetailFragment extends Fragment {
 
     public static final String TAG = "LNDetailFragment";
 
-    /* Fragment Arguments */
-    public static final String ARG_LIGHTNOVEL_ID = "lightnovel_id";
-    public static final String ARG_LIGHTNOVEL_TITLE = "lightnovel_title";
-    public static final String ARG_LIGHTNOVEL_AUTHOR = "lightnovel_author";
-
     /* Defines the type of literature to be used in the network calls */
     private static final ServerInfo.LiteraryType TYPE = ServerInfo.LiteraryType.LIGHT_NOVEL;
 
@@ -79,15 +71,6 @@ public class LightNovelDetailFragment extends Fragment {
     private TextView mDescriptionTextView;
     private TextView mTranslatorSiteTextView;
     private WrappedLinearLayout mGenresLayout;
-
-    /* Values */
-    private int mId;
-    private String mTitle;
-    private String mAuthor;
-    private String mDescription;
-    private String mCompleted;
-    private String mTranslatorSite;
-    private List<String> mGenres;
 
     private OnDataFetched mActivity;
 
@@ -101,12 +84,10 @@ public class LightNovelDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_LIGHTNOVEL_ID)) {
+        if (getArguments().containsKey(JsonKeys.LightNovel.ID)) {
 
-            int id = getArguments().getInt(ARG_LIGHTNOVEL_ID);
-            String title = getArguments().getString(ARG_LIGHTNOVEL_TITLE, "Light Novel");
-
-            Log.d(TAG, title);
+            int id = getArguments().getInt(JsonKeys.LightNovel.ID);
+            String title = getArguments().getString(JsonKeys.LightNovel.TITLE, "Light Novel");
 
             /* Sends a request for a json object via volley */
             JsonObjectRequest json = new JsonObjectRequest(Request.Method.GET, ServerInfo.getDetailUrl(TYPE, String.valueOf(id)), null, onSuccess, onError);
@@ -146,13 +127,13 @@ public class LightNovelDetailFragment extends Fragment {
         @Override
         public void onResponse(JSONObject response) {
             try {
-                mId = response.getInt(JsonKeys.LightNovel.ID);
-                mTitle = response.getString(JsonKeys.LightNovel.TITLE);
-                mAuthor = response.getString(JsonKeys.LightNovel.AUTHOR);
-                mDescription = response.getString(JsonKeys.LightNovel.DESCRIPTION);
-                mCompleted = response.getString(JsonKeys.LightNovel.COMPLETED);
-                mTranslatorSite = response.getString(JsonKeys.LightNovel.TRANSLATOR_SITE);
-                mGenres = LiteraryTrackerUtils.jsonArrayToList(response.getJSONArray(JsonKeys.LightNovel.GENRES));
+                int mId = response.getInt(JsonKeys.LightNovel.ID);
+                String mTitle = response.getString(JsonKeys.LightNovel.TITLE);
+                String mAuthor = response.getString(JsonKeys.LightNovel.AUTHOR);
+                String mDescription = response.getString(JsonKeys.LightNovel.DESCRIPTION);
+                String mCompleted = response.getString(JsonKeys.LightNovel.COMPLETED);
+                String mTranslatorSite = response.getString(JsonKeys.LightNovel.TRANSLATOR_SITE);
+                List<String> mGenres = LiteraryTrackerUtils.jsonArrayToList(response.getJSONArray(JsonKeys.LightNovel.GENRES));
 
                 mActivity.setData(mId, mTitle, mAuthor, mDescription, mCompleted, mTranslatorSite, mGenres);
 

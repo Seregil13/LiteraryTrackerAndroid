@@ -31,12 +31,14 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
 import com.seregil13.literarytracker.R;
+import com.seregil13.literarytracker.util.JsonKeys;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +50,8 @@ import java.util.List;
  * in a {@link LightNovelListActivity}.
  */
 public class LightNovelDetailActivity extends AppCompatActivity implements OnDataFetched {
+
+    private static final String TAG = "LNDetailActivity";
 
     private int mId;
     private String mTitle;
@@ -72,16 +76,15 @@ public class LightNovelDetailActivity extends AppCompatActivity implements OnDat
                 Context context = view.getContext();
 
                 Intent intent = new Intent(context, LightNovelFormActivity.class);
-                intent.putExtra(LightNovelFormActivity.ID, mId);
-                intent.putExtra(LightNovelFormActivity.TITLE, mTitle);
-                intent.putExtra(LightNovelFormActivity.AUTHOR, mAuthor);
-                intent.putExtra(LightNovelFormActivity.DESCRIPTION, mDescription);
-                intent.putExtra(LightNovelFormActivity.COMPLETED, mCompleted);
-                intent.putExtra(LightNovelFormActivity.TRANSLATOR_SITE, mTranslatorSite);
-                intent.putStringArrayListExtra(LightNovelFormActivity.GENRES, (ArrayList<String>) mGenres);
+                intent.putExtra(JsonKeys.LightNovel.ID, mId);
+                intent.putExtra(JsonKeys.LightNovel.TITLE, mTitle);
+                intent.putExtra(JsonKeys.LightNovel.AUTHOR, mAuthor);
+                intent.putExtra(JsonKeys.LightNovel.DESCRIPTION, mDescription);
+                intent.putExtra(JsonKeys.LightNovel.COMPLETED, mCompleted);
+                intent.putExtra(JsonKeys.LightNovel.TRANSLATOR_SITE, mTranslatorSite);
+                intent.putStringArrayListExtra(JsonKeys.LightNovel.GENRES, (ArrayList<String>) mGenres);
 
                 context.startActivity(intent);
-
             }
         });
 
@@ -104,8 +107,8 @@ public class LightNovelDetailActivity extends AppCompatActivity implements OnDat
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putInt(LightNovelDetailFragment.ARG_LIGHTNOVEL_ID, getIntent().getIntExtra(LightNovelDetailFragment.ARG_LIGHTNOVEL_ID, 1));
-            arguments.putString(LightNovelDetailFragment.ARG_LIGHTNOVEL_TITLE, getIntent().getStringExtra(LightNovelDetailFragment.ARG_LIGHTNOVEL_TITLE));
+            arguments.putInt(JsonKeys.LightNovel.ID, getIntent().getIntExtra(JsonKeys.LightNovel.ID, 1));
+            arguments.putString(JsonKeys.LightNovel.TITLE, getIntent().getStringExtra(JsonKeys.LightNovel.TITLE));
             LightNovelDetailFragment fragment = new LightNovelDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction().add(R.id.lightnovel_detail_container, fragment).commit();

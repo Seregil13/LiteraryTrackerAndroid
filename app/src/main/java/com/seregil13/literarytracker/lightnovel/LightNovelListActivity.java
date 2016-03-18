@@ -170,8 +170,8 @@ public class LightNovelListActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putInt(LightNovelDetailFragment.ARG_LIGHTNOVEL_ID, holder.mItem.id);
-                        arguments.putString(LightNovelDetailFragment.ARG_LIGHTNOVEL_TITLE, holder.mItem.title);
+                        arguments.putInt(JsonKeys.LightNovel.ID, holder.mItem.id);
+                        arguments.putString(JsonKeys.LightNovel.TITLE, holder.mItem.title);
                         LightNovelDetailFragment fragment = new LightNovelDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -180,8 +180,8 @@ public class LightNovelListActivity extends AppCompatActivity {
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, LightNovelDetailActivity.class);
-                        intent.putExtra(LightNovelDetailFragment.ARG_LIGHTNOVEL_ID, holder.mItem.id);
-                        intent.putExtra(LightNovelDetailFragment.ARG_LIGHTNOVEL_TITLE, holder.mItem.title);
+                        intent.putExtra(JsonKeys.LightNovel.ID, holder.mItem.id);
+                        intent.putExtra(JsonKeys.LightNovel.TITLE, holder.mItem.title);
 
                         context.startActivity(intent);
                     }

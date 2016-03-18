@@ -24,11 +24,14 @@
 
 package com.seregil13.literarytracker.lightnovel;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.seregil13.literarytracker.R;
+import com.seregil13.literarytracker.util.JsonKeys;
 
 public class LightNovelFormActivity extends AppCompatActivity {
 
@@ -52,16 +55,33 @@ public class LightNovelFormActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
-            arguments.putInt(ID, getIntent().getIntExtra(ID, 1));
-            arguments.putString(TITLE, getIntent().getStringExtra(TITLE));
-            arguments.putString(AUTHOR, getIntent().getStringExtra(AUTHOR));
-            arguments.putString(DESCRIPTION, getIntent().getStringExtra(COMPLETED));
-            arguments.putString(TRANSLATOR_SITE, getIntent().getStringExtra(TRANSLATOR_SITE));
-            arguments.putStringArrayList(GENRES, getIntent().getStringArrayListExtra(GENRES));
+            arguments.putInt(ID, getIntent().getIntExtra(JsonKeys.LightNovel.ID, 1));
+            arguments.putString(JsonKeys.LightNovel.TITLE, getIntent().getStringExtra(JsonKeys.LightNovel.TITLE));
+            arguments.putString(JsonKeys.LightNovel.AUTHOR, getIntent().getStringExtra(JsonKeys.LightNovel.AUTHOR));
+            arguments.putString(JsonKeys.LightNovel.DESCRIPTION, getIntent().getStringExtra(JsonKeys.LightNovel.DESCRIPTION));
+            arguments.putString(JsonKeys.LightNovel.COMPLETED, getIntent().getStringExtra(JsonKeys.LightNovel.COMPLETED));
+            arguments.putString(JsonKeys.LightNovel.TRANSLATOR_SITE, getIntent().getStringExtra(JsonKeys.LightNovel.TRANSLATOR_SITE));
+            arguments.putStringArrayList(JsonKeys.LightNovel.GENRES, getIntent().getStringArrayListExtra(JsonKeys.LightNovel.GENRES));
 
             LightNovelEditFragment fragment = new LightNovelEditFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction().add(R.id.container, fragment).commit();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            // This ID represents the Home or Up button. In the case of this
+            // activity, the Up button is shown. For
+            // more details, see the Navigation pattern on Android Design:
+            //
+            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
+            //
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
