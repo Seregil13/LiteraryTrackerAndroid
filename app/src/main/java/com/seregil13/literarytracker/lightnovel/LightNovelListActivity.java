@@ -47,6 +47,7 @@ import com.seregil13.literarytracker.R;
 import com.seregil13.literarytracker.network.ServerInfo;
 import com.seregil13.literarytracker.network.VolleySingleton;
 import com.seregil13.literarytracker.util.JsonKeys;
+import com.seregil13.literarytracker.util.LiteraryTrackerUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -82,21 +83,12 @@ public class LightNovelListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        /* Use the volley library to send a request */
-        JsonArrayRequest json = new JsonArrayRequest(Request.Method.GET, ServerInfo.getListUrl(ServerInfo.LiteraryType.LIGHT_NOVEL), null, onSuccess, onError);
-        VolleySingleton.getInstance(this.getApplicationContext()).addToRequestQueue(json);
+        sendRequest();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG) // TODO Make it go to new ln page
-                        .setAction("Action", null).show();
-            }
-        });
+        fab.setOnClickListener(fabListener);
 
         View recyclerView = findViewById(R.id.lightnovel_list);
-        assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
 
         if (findViewById(R.id.lightnovel_detail_container) != null) {
@@ -108,10 +100,28 @@ public class LightNovelListActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Sends a request for the list of Light Novels
+     */
+    private void sendRequest() {
+    /* Use the volley library to send a request */
+        JsonArrayRequest json = new JsonArrayRequest(Request.Method.GET, ServerInfo.LIGHT_NOVEL.getListUrl(), null, onSuccess, onError);
+        VolleySingleton.getInstance(this.getApplicationContext()).addToRequestQueue(json);
+    }
+
     SimpleItemRecyclerViewAdapter adapter = new SimpleItemRecyclerViewAdapter(new ArrayList<LightNovelListContent.LightNovel>());
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == LiteraryTrackerUtils.CREATE_REQUEST_CODE) {
+            //TODO: refresh list
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     Response.Listener<JSONArray> onSuccess = new Response.Listener<JSONArray>() {
@@ -144,6 +154,19 @@ public class LightNovelListActivity extends AppCompatActivity {
         }
     };
 
+    private View.OnClickListener fabListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Context context = LightNovelListActivity.this;
+
+            Intent intent = new Intent(context, LightNovelFormActivity.class);
+
+            startActivityForResult(intent, LiteraryTrackerUtils.CREATE_REQUEST_CODE);
+
+            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG) // TODO Make it go to new ln page
+                    .setAction("Action", null).show();
+        }
+    };
 
     public class SimpleItemRecyclerViewAdapter extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 

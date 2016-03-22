@@ -36,6 +36,15 @@ import java.util.ArrayList;
  */
 public class LiteraryTrackerUtils {
 
+    /* random integer for request code */
+    // TODO: Find a better spot for these
+    public static final int EDIT_REQUEST_CODE = 1238;
+    public static final int EDIT_SUCCESS_CODE = 1239;
+    public static final int EDIT_CANCEL_CODE = 1240;
+
+    public static final int CREATE_REQUEST_CODE = 1241;
+    public static final int CREATE_SUCCESS_CODE = 1242;
+    public static final int CREATE_FAILURE_CODE = 1243;
 
     /**
      * Converts a {@link JSONArray} to an {@link ArrayList} of strings

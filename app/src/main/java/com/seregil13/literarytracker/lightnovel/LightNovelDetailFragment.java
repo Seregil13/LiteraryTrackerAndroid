@@ -62,9 +62,6 @@ public class LightNovelDetailFragment extends Fragment {
 
     public static final String TAG = "LNDetailFragment";
 
-    /* Defines the type of literature to be used in the network calls */
-    private static final ServerInfo.LiteraryType TYPE = ServerInfo.LiteraryType.LIGHT_NOVEL;
-
     /* Views */
     private TextView mAuthorTextView;
     private TextView mCompletedTextView;
@@ -90,8 +87,7 @@ public class LightNovelDetailFragment extends Fragment {
             String title = getArguments().getString(JsonKeys.LightNovel.TITLE, "Light Novel");
 
             /* Sends a request for a json object via volley */
-            JsonObjectRequest json = new JsonObjectRequest(Request.Method.GET, ServerInfo.getDetailUrl(TYPE, String.valueOf(id)), null, onSuccess, onError);
-            VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(json);
+            requestDetails(id);
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
@@ -99,6 +95,11 @@ public class LightNovelDetailFragment extends Fragment {
                 appBarLayout.setTitle(title);
             }
         }
+    }
+
+    public void requestDetails(int id) {
+        JsonObjectRequest json = new JsonObjectRequest(Request.Method.GET, ServerInfo.LIGHT_NOVEL.getDetailUrl(id), null, onSuccess, onError);
+        VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(json);
     }
 
     @Override

@@ -25,23 +25,25 @@
 package com.seregil13.literarytracker.lightnovel;
 
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.seregil13.literarytracker.R;
 import com.seregil13.literarytracker.util.JsonKeys;
+import com.seregil13.literarytracker.util.LiteraryTrackerUtils;
+
+import java.util.ArrayList;
 
 public class LightNovelFormActivity extends AppCompatActivity {
 
-    public static final String ID = "id";
-    public static final String TITLE = "title";
-    public static final String AUTHOR = "author";
-    public static final String DESCRIPTION = "description";
-    public static final String COMPLETED = "completed";
-    public static final String TRANSLATOR_SITE = "translatorSite";
-    public static final String GENRES = "genres";
+    private static final String TAG = "LNFormActivity";
+    private static final String REQUEST_CODE_KEY = "requestCode";
+
+    /* The request code will determine which form to display. */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,32 +56,44 @@ public class LightNovelFormActivity extends AppCompatActivity {
         }
 
         if (savedInstanceState == null) {
-            Bundle arguments = new Bundle();
-            arguments.putInt(ID, getIntent().getIntExtra(JsonKeys.LightNovel.ID, 1));
-            arguments.putString(JsonKeys.LightNovel.TITLE, getIntent().getStringExtra(JsonKeys.LightNovel.TITLE));
-            arguments.putString(JsonKeys.LightNovel.AUTHOR, getIntent().getStringExtra(JsonKeys.LightNovel.AUTHOR));
-            arguments.putString(JsonKeys.LightNovel.DESCRIPTION, getIntent().getStringExtra(JsonKeys.LightNovel.DESCRIPTION));
-            arguments.putString(JsonKeys.LightNovel.COMPLETED, getIntent().getStringExtra(JsonKeys.LightNovel.COMPLETED));
-            arguments.putString(JsonKeys.LightNovel.TRANSLATOR_SITE, getIntent().getStringExtra(JsonKeys.LightNovel.TRANSLATOR_SITE));
-            arguments.putStringArrayList(JsonKeys.LightNovel.GENRES, getIntent().getStringArrayListExtra(JsonKeys.LightNovel.GENRES));
 
-            LightNovelEditFragment fragment = new LightNovelEditFragment();
-            fragment.setArguments(arguments);
+            int requestCode = getIntent().getIntExtra(REQUEST_CODE_KEY, LiteraryTrackerUtils.CREATE_REQUEST_CODE);
+            Fragment fragment;
+
+            switch (requestCode) {
+                case LiteraryTrackerUtils.CREATE_REQUEST_CODE:
+                    fragment = new LightNovelCreateFragment();
+                    break;
+                case LiteraryTrackerUtils.EDIT_REQUEST_CODE:
+                    int id = getIntent().getIntExtra(JsonKeys.LightNovel.ID, 1);
+                    String title = getIntent().getStringExtra(JsonKeys.LightNovel.TITLE);
+                    String author = getIntent().getStringExtra(JsonKeys.LightNovel.AUTHOR);
+                    String description = getIntent().getStringExtra(JsonKeys.LightNovel.DESCRIPTION);
+                    String completed = getIntent().getStringExtra(JsonKeys.LightNovel.COMPLETED);
+                    String tsite = getIntent().getStringExtra(JsonKeys.LightNovel.TRANSLATOR_SITE);
+                    ArrayList<String> genres =  getIntent().getStringArrayListExtra(JsonKeys.LightNovel.GENRES);
+                    fragment = LightNovelEditFragment.newInstance(id, title, author, description, completed, tsite, genres);
+                    break;
+                default:
+                    fragment = new LightNovelCreateFragment();
+                    break;
+            }
+
             getSupportFragmentManager().beginTransaction().add(R.id.container, fragment).commit();
         }
+    }
+
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode) {
+        intent.putExtra(REQUEST_CODE_KEY, requestCode);
+        super.startActivityForResult(intent, requestCode);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-
+            this.finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
