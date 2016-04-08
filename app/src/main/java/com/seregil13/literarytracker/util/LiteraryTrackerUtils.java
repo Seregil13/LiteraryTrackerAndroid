@@ -44,7 +44,11 @@ public class LiteraryTrackerUtils {
 
     public static final int CREATE_REQUEST_CODE = 1241;
     public static final int CREATE_SUCCESS_CODE = 1242;
-    public static final int CREATE_FAILURE_CODE = 1243;
+    public static final int CREATE_CANCEL_CODE = 1243;
+
+    public static final int GENRE_REQUEST_CODE = 1244;
+    public static final int GENRE_SUCCESS_CODE = 1245;
+    public static final int GENRE_CANCEL_CODE = 1246;
 
     /**
      * Converts a {@link JSONArray} to an {@link ArrayList} of strings
@@ -62,5 +66,4 @@ public class LiteraryTrackerUtils {
 
         return result;
     }
-
 }

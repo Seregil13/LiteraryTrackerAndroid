@@ -81,10 +81,10 @@ public class LightNovelDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(JsonKeys.LightNovel.ID)) {
+        if (getArguments().containsKey(JsonKeys.ID.toString())) {
 
-            int id = getArguments().getInt(JsonKeys.LightNovel.ID);
-            String title = getArguments().getString(JsonKeys.LightNovel.TITLE, "Light Novel");
+            int id = getArguments().getInt(JsonKeys.ID.toString());
+            String title = getArguments().getString(JsonKeys.TITLE.toString(), "Light Novel");
 
             /* Sends a request for a json object via volley */
             requestDetails(id);
@@ -128,13 +128,13 @@ public class LightNovelDetailFragment extends Fragment {
         @Override
         public void onResponse(JSONObject response) {
             try {
-                int mId = response.getInt(JsonKeys.LightNovel.ID);
-                String mTitle = response.getString(JsonKeys.LightNovel.TITLE);
-                String mAuthor = response.getString(JsonKeys.LightNovel.AUTHOR);
-                String mDescription = response.getString(JsonKeys.LightNovel.DESCRIPTION);
-                String mCompleted = response.getString(JsonKeys.LightNovel.COMPLETED);
-                String mTranslatorSite = response.getString(JsonKeys.LightNovel.TRANSLATOR_SITE);
-                List<String> mGenres = LiteraryTrackerUtils.jsonArrayToList(response.getJSONArray(JsonKeys.LightNovel.GENRES));
+                int mId = response.getInt(JsonKeys.ID.toString());
+                String mTitle = response.getString(JsonKeys.TITLE.toString());
+                String mAuthor = response.getString(JsonKeys.AUTHOR.toString());
+                String mDescription = response.getString(JsonKeys.DESCRIPTION.toString());
+                String mCompleted = response.getString(JsonKeys.COMPLETED.toString());
+                String mTranslatorSite = response.getString(JsonKeys.TRANSLATOR_SITE.toString());
+                List<String> mGenres = LiteraryTrackerUtils.jsonArrayToList(response.getJSONArray(JsonKeys.GENRES.toString()));
 
                 mActivity.setData(mId, mTitle, mAuthor, mDescription, mCompleted, mTranslatorSite, mGenres);
 

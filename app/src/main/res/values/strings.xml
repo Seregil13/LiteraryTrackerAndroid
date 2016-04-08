@@ -37,4 +37,6 @@
     <string name="translatorSite">Translated by</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="confirm">confirm</string>
+    <string name="edit_genres">Edit Genres</string>
 </resources>

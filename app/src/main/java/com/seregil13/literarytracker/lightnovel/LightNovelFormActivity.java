@@ -41,7 +41,7 @@ import java.util.ArrayList;
 public class LightNovelFormActivity extends AppCompatActivity {
 
     private static final String TAG = "LNFormActivity";
-    private static final String REQUEST_CODE_KEY = "requestCode";
+    public static final String REQUEST_CODE_KEY = "requestCode";
 
     /* The request code will determine which form to display. */
 
@@ -60,18 +60,21 @@ public class LightNovelFormActivity extends AppCompatActivity {
             int requestCode = getIntent().getIntExtra(REQUEST_CODE_KEY, LiteraryTrackerUtils.CREATE_REQUEST_CODE);
             Fragment fragment;
 
+            Log.d(TAG, String.format("%d", requestCode));
+
             switch (requestCode) {
                 case LiteraryTrackerUtils.CREATE_REQUEST_CODE:
                     fragment = new LightNovelCreateFragment();
                     break;
                 case LiteraryTrackerUtils.EDIT_REQUEST_CODE:
-                    int id = getIntent().getIntExtra(JsonKeys.LightNovel.ID, 1);
-                    String title = getIntent().getStringExtra(JsonKeys.LightNovel.TITLE);
-                    String author = getIntent().getStringExtra(JsonKeys.LightNovel.AUTHOR);
-                    String description = getIntent().getStringExtra(JsonKeys.LightNovel.DESCRIPTION);
-                    String completed = getIntent().getStringExtra(JsonKeys.LightNovel.COMPLETED);
-                    String tsite = getIntent().getStringExtra(JsonKeys.LightNovel.TRANSLATOR_SITE);
-                    ArrayList<String> genres =  getIntent().getStringArrayListExtra(JsonKeys.LightNovel.GENRES);
+
+                    int id = getIntent().getIntExtra(JsonKeys.ID.toString(), 1);
+                    String title = getIntent().getStringExtra(JsonKeys.TITLE.toString());
+                    String author = getIntent().getStringExtra(JsonKeys.AUTHOR.toString());
+                    String description = getIntent().getStringExtra(JsonKeys.DESCRIPTION.toString());
+                    String completed = getIntent().getStringExtra(JsonKeys.COMPLETED.toString());
+                    String tsite = getIntent().getStringExtra(JsonKeys.TRANSLATOR_SITE.toString());
+                    ArrayList<String> genres =  getIntent().getStringArrayListExtra(JsonKeys.GENRES.toString());
                     fragment = LightNovelEditFragment.newInstance(id, title, author, description, completed, tsite, genres);
                     break;
                 default:

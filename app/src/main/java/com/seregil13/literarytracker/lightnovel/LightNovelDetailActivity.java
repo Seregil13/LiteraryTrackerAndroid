@@ -71,7 +71,7 @@ public class LightNovelDetailActivity extends AppCompatActivity implements OnDat
 
         /* TODO: make fab open edit light novel */
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(fabListener);
+        fab.setOnClickListener(mFabListener);
 
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
@@ -92,8 +92,8 @@ public class LightNovelDetailActivity extends AppCompatActivity implements OnDat
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putInt(JsonKeys.LightNovel.ID, getIntent().getIntExtra(JsonKeys.LightNovel.ID, 1));
-            arguments.putString(JsonKeys.LightNovel.TITLE, getIntent().getStringExtra(JsonKeys.LightNovel.TITLE));
+            arguments.putInt(JsonKeys.ID.toString(), getIntent().getIntExtra(JsonKeys.ID.toString(), 1));
+            arguments.putString(JsonKeys.TITLE.toString(), getIntent().getStringExtra(JsonKeys.TITLE.toString()));
             mDetailFragment = new LightNovelDetailFragment();
             mDetailFragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction().add(R.id.lightnovel_detail_container, mDetailFragment).commit();
@@ -122,7 +122,7 @@ public class LightNovelDetailActivity extends AppCompatActivity implements OnDat
         if (requestCode == LiteraryTrackerUtils.EDIT_REQUEST_CODE) {
             if (resultCode == LiteraryTrackerUtils.EDIT_SUCCESS_CODE) {
                 //TODO: been updated refresh data
-                mDetailFragment.requestDetails(data.getIntExtra(JsonKeys.LightNovel.ID, 1));
+                mDetailFragment.requestDetails(data.getIntExtra(JsonKeys.ID.toString(), 1));
             } else {
                 //TODO: canceled do nothing
             }
@@ -145,19 +145,20 @@ public class LightNovelDetailActivity extends AppCompatActivity implements OnDat
     /**
      * Handles the onclick event for the floating action buttons
      */
-    private View.OnClickListener fabListener = new View.OnClickListener() {
+    private View.OnClickListener mFabListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             Context context = view.getContext();
 
             Intent intent = new Intent(context, LightNovelFormActivity.class);
-            intent.putExtra(JsonKeys.LightNovel.ID, mId);
-            intent.putExtra(JsonKeys.LightNovel.TITLE, mTitle);
-            intent.putExtra(JsonKeys.LightNovel.AUTHOR, mAuthor);
-            intent.putExtra(JsonKeys.LightNovel.DESCRIPTION, mDescription);
-            intent.putExtra(JsonKeys.LightNovel.COMPLETED, mCompleted);
-            intent.putExtra(JsonKeys.LightNovel.TRANSLATOR_SITE, mTranslatorSite);
-            intent.putStringArrayListExtra(JsonKeys.LightNovel.GENRES, (ArrayList<String>) mGenres);
+            intent.putExtra(JsonKeys.ID.toString(), mId);
+            intent.putExtra(JsonKeys.TITLE.toString(), mTitle);
+            intent.putExtra(JsonKeys.AUTHOR.toString(), mAuthor);
+            intent.putExtra(JsonKeys.DESCRIPTION.toString(), mDescription);
+            intent.putExtra(JsonKeys.COMPLETED.toString(), mCompleted);
+            intent.putExtra(JsonKeys.TRANSLATOR_SITE.toString(), mTranslatorSite);
+            intent.putStringArrayListExtra(JsonKeys.GENRES.toString(), (ArrayList<String>) mGenres);
+            intent.putExtra(LightNovelFormActivity.REQUEST_CODE_KEY, LiteraryTrackerUtils.EDIT_REQUEST_CODE);
 
             startActivityForResult(intent, LiteraryTrackerUtils.EDIT_REQUEST_CODE);
 //                context.startActivity(intent);

@@ -24,40 +24,90 @@
 
 package com.seregil13.literarytracker.util;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+
 /**
  * Holds the keys used by the json response from the server
  *
  * @author Alec
  * @since March 13, 2016
  */
-public class JsonKeys {
+public enum JsonKeys {
+    ID("id"),
+    TITLE("title"),
+    AUTHOR("author"),
+    DESCRIPTION("description"),
+    COMPLETED("completed"),
+    TRANSLATOR_SITE("translatorSite"),
+    GENRES("genres");
 
-    public class LightNovel {
-        public static final String ID = "id";
-        public static final String TITLE = "title";
-        public static final String AUTHOR = "author";
-        public static final String DESCRIPTION = "description";
-        public static final String COMPLETED = "completed";
-        public static final String TRANSLATOR_SITE = "translatorSite";
-        public static final String GENRES = "genres";
+    String name;
+
+    JsonKeys(String name) {
+        this.name = name;
     }
 
-    public class Manga {
-        public static final String ID = "id";
-        public static final String TITLE = "title";
-        public static final String AUTHOR = "author";
-        public static final String DESCRIPTION = "description";
-        public static final String COMPLETED = "completed";
-        public static final String TRANSLATOR_SITE = "translatorSite";
-        public static final String GENRES = "genres";
+    @Override
+    public String toString() {
+        return this.name;
     }
 
-    public class Book {
-        public static final String ID = "id";
-        public static final String TITLE = "title";
-        public static final String AUTHOR = "author";
-        public static final String DESCRIPTION = "description";
-        public static final String COMPLETED = "completed";
-        public static final String GENRES = "genres";
-    }
+//    public enum Columns {
+//        ID("id"),
+//        TITLE("title"),
+//        AUTHOR("author"),
+//        DESCRIPTION("description"),
+//        COMPLETED("completed"),
+//        TRANSLATOR_SITE("translatorSite"),
+//        GENRES("genres");
+//
+//        String name;
+//
+//        Columns(String name) {
+//            this.name = name;
+//        }
+//
+////        LIGHT_NOVEL(Columns.ID, Columns.TITLE, Columns.AUTHOR, Columns.DESCRIPTION, Columns.COMPLETED, Columns.TRANSLATOR_SITE, Columns.GENRES),
+////        MANGA(Columns.ID, Columns.TITLE, Columns.AUTHOR, Columns.DESCRIPTION, Columns.COMPLETED, Columns.TRANSLATOR_SITE, Columns.GENRES),
+////        BOOK(Columns.ID, Columns.TITLE, Columns.AUTHOR, Columns.DESCRIPTION, Columns.COMPLETED, Columns.GENRES);
+////
+////        ArrayList<Columns> keys;
+////
+////        JsonKeys(Columns... columns) {
+////            keys = new ArrayList<>();
+////            Collections.addAll(keys, columns);
+////        }
+//    }
+
+
+//    public class LightNovel {
+//        public static final String ID = "id";
+//        public static final String TITLE = "title";
+//        public static final String AUTHOR = "author";
+//        public static final String DESCRIPTION = "description";
+//        public static final String COMPLETED = "completed";
+//        public static final String TRANSLATOR_SITE = "translatorSite";
+//        public static final String GENRES = "genres";
+//    }
+//
+//    public class Manga {
+//        public static final String ID = "id";
+//        public static final String TITLE = "title";
+//        public static final String AUTHOR = "author";
+//        public static final String DESCRIPTION = "description";
+//        public static final String COMPLETED = "completed";
+//        public static final String TRANSLATOR_SITE = "translatorSite";
+//        public static final String GENRES = "genres";
+//    }
+//
+//    public class Book {
+//        public static final String ID = "id";
+//        public static final String TITLE = "title";
+//        public static final String AUTHOR = "author";
+//        public static final String DESCRIPTION = "description";
+//        public static final String COMPLETED = "completed";
+//        public static final String GENRES = "genres";
+//    }
 }

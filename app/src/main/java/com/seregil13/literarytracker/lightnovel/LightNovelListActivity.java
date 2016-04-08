@@ -132,9 +132,9 @@ public class LightNovelListActivity extends AppCompatActivity {
             try {
                 for (int i = 0; i < response.length(); ++i) {
                     JSONObject novel = response.getJSONObject(i);
-                    int id = novel.getInt(JsonKeys.LightNovel.ID);
-                    String title  = novel.getString(JsonKeys.LightNovel.TITLE);
-                    String author = novel.getString(JsonKeys.LightNovel.AUTHOR);
+                    int id = novel.getInt(JsonKeys.ID.toString());
+                    String title  = novel.getString(JsonKeys.TITLE.toString());
+                    String author = novel.getString(JsonKeys.AUTHOR.toString());
 
                     list.add(new LightNovelListContent.LightNovel(id, title, author));
                 }
@@ -193,8 +193,8 @@ public class LightNovelListActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putInt(JsonKeys.LightNovel.ID, holder.mItem.id);
-                        arguments.putString(JsonKeys.LightNovel.TITLE, holder.mItem.title);
+                        arguments.putInt(JsonKeys.ID.toString(), holder.mItem.id);
+                        arguments.putString(JsonKeys.TITLE.toString(), holder.mItem.title);
                         LightNovelDetailFragment fragment = new LightNovelDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -203,8 +203,8 @@ public class LightNovelListActivity extends AppCompatActivity {
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, LightNovelDetailActivity.class);
-                        intent.putExtra(JsonKeys.LightNovel.ID, holder.mItem.id);
-                        intent.putExtra(JsonKeys.LightNovel.TITLE, holder.mItem.title);
+                        intent.putExtra(JsonKeys.ID.toString(), holder.mItem.id);
+                        intent.putExtra(JsonKeys.TITLE.toString(), holder.mItem.title);
 
                         context.startActivity(intent);
                     }
