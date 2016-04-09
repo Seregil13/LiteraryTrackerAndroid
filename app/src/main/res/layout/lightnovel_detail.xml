@@ -47,13 +47,13 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"/>
 
-    <com.seregil13.literarytracker.views.WrappedLinearLayout
+    <com.seregil13.widgetlibrary.WrappedLinearLayout
         android:id="@+id/genres"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-    </com.seregil13.literarytracker.views.WrappedLinearLayout>
+    </com.seregil13.widgetlibrary.WrappedLinearLayout>
 
     <TextView
         android:id="@+id/description"

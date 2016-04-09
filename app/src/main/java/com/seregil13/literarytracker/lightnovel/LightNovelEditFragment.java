@@ -46,13 +46,12 @@ import com.seregil13.literarytracker.network.ServerInfo;
 import com.seregil13.literarytracker.network.VolleySingleton;
 import com.seregil13.literarytracker.util.JsonKeys;
 import com.seregil13.literarytracker.util.LiteraryTrackerUtils;
-import com.seregil13.literarytracker.views.WrappedLinearLayout;
+import com.seregil13.widgetlibrary.WrappedLinearLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
