@@ -1,1 +1,4 @@
 include ':app'
+
+include ':widgetlibrary'
+project(':widgetlibrary').projectDir = new File(settingsDir, '../WidgetLibrary/library')

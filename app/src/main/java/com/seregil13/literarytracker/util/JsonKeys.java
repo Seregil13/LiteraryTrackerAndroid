@@ -24,10 +24,6 @@
 
 package com.seregil13.literarytracker.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-
 /**
  * Holds the keys used by the json response from the server
  *
