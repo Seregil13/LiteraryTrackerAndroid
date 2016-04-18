@@ -50,7 +50,7 @@ import com.seregil13.literarytracker.views.WrappedLinearLayout;
 
 import org.json.JSONObject;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * A fragment representing a single LightNovel detail screen.
@@ -134,7 +134,7 @@ public class LightNovelDetailFragment extends Fragment {
                 String mDescription = response.getString(JsonKeys.DESCRIPTION.toString());
                 String mCompleted = response.getString(JsonKeys.COMPLETED.toString());
                 String mTranslatorSite = response.getString(JsonKeys.TRANSLATOR_SITE.toString());
-                List<String> mGenres = LiteraryTrackerUtils.jsonArrayToList(response.getJSONArray(JsonKeys.GENRES.toString()));
+                ArrayList<String> mGenres = LiteraryTrackerUtils.jsonArrayToList(response.getJSONArray(JsonKeys.GENRES.toString()));
 
                 mActivity.setData(mId, mTitle, mAuthor, mDescription, mCompleted, mTranslatorSite, mGenres);
 
@@ -143,21 +143,8 @@ public class LightNovelDetailFragment extends Fragment {
                 mDescriptionTextView.setText(mDescription);
                 mTranslatorSiteTextView.setText(mTranslatorSite);
 
-                for (String genre : mGenres) {
-
-                    /* Creates a textview to hold the genre */
-                    TextView genreTV = new TextView(getContext());
-                    genreTV.setText(genre);
-                    genreTV.setBackgroundResource(R.drawable.border);
-                    genreTV.setTextColor(Color.WHITE);
-                    genreTV.setPadding(15,10,15,10);
-
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    params.setMargins(10,10,10,10);
-                    genreTV.setLayoutParams(params);
-
-                    mGenresLayout.addView(genreTV);
-                }
+                mGenresLayout.removeAllViews(); // Removes the existing views
+                mGenresLayout.addTextViews(mGenres); // Adds the new genres to the WrappedLinearLayout
 
                 ((CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout)).setTitle(mTitle);
             } catch (Exception e) {

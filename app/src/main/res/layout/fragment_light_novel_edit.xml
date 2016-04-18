@@ -63,18 +63,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <com.seregil13.literarytracker.views.WrappedLinearLayout
-            android:id="@+id/genres"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-        </com.seregil13.literarytracker.views.WrappedLinearLayout>
-
         <Button
             android:id="@+id/genreSelection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:drawableEnd="@drawable/action_submenu"
+            android:textAlignment="viewStart"
+
             android:text="@string/edit_genres"/>
 
         <EditText

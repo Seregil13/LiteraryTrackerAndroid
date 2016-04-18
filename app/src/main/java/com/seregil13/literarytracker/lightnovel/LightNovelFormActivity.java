@@ -75,7 +75,7 @@ public class LightNovelFormActivity extends AppCompatActivity {
                     String completed = getIntent().getStringExtra(JsonKeys.COMPLETED.toString());
                     String tsite = getIntent().getStringExtra(JsonKeys.TRANSLATOR_SITE.toString());
                     ArrayList<String> genres =  getIntent().getStringArrayListExtra(JsonKeys.GENRES.toString());
-                    fragment = LightNovelEditFragment.newInstance(id, title, author, description, completed, tsite, genres);
+                    fragment = LightNovelEditFragment.newEditInstance(id, title, author, description, completed, tsite, genres);
                     break;
                 default:
                     fragment = new LightNovelCreateFragment();

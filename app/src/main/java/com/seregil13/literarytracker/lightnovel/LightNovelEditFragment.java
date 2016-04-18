@@ -28,6 +28,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,13 +47,11 @@ import com.seregil13.literarytracker.network.ServerInfo;
 import com.seregil13.literarytracker.network.VolleySingleton;
 import com.seregil13.literarytracker.util.JsonKeys;
 import com.seregil13.literarytracker.util.LiteraryTrackerUtils;
-import com.seregil13.literarytracker.views.WrappedLinearLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -67,7 +66,9 @@ public class LightNovelEditFragment extends Fragment {
     private String mDescription;
     private String mCompleted;
     private String mTranslatorSite;
-    private ArrayList<String> mGenres; //// TODO: 3/21/2016 add in genres
+    private ArrayList<String> mGenres;
+
+    private Mode mCreateOrEdit;
 
     /* Views */
     private EditText mTitleET;
@@ -75,19 +76,26 @@ public class LightNovelEditFragment extends Fragment {
     private EditText mDescriptionET;
     private CheckBox mCompletedCB;
     private EditText mTranslatorSiteET;
-    private WrappedLinearLayout mGenresWLL;
-    private Button mGenreButton;
-    private Button mCancelBtn;
-    private Button mSaveBtn;
 
-    /* TODO: input genres */
+    private static final String CREATE_OR_EDIT_KEY = "create_or_edit";
+
+    public enum Mode {
+        CREATE,
+        EDIT
+    }
 
     /**
-     * Requiired empty public constructor
+     * Required empty public constructor
      */
     public LightNovelEditFragment() {}
 
-    public static LightNovelEditFragment newInstance(int id, String title, String author, String description, String completed, String translatorSite, ArrayList<String> genres) {
+    /**
+     * Creates a new instance of the fragment in edit mode with all the pertinent data passed in as
+     * parameters.
+     *
+     * @return An instance of LightNovelEditFragment.
+     */
+    public static LightNovelEditFragment newEditInstance(int id, String title, String author, String description, String completed, String translatorSite, ArrayList<String> genres) {
         LightNovelEditFragment fragment = new LightNovelEditFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(JsonKeys.ID.toString(), id);
@@ -97,6 +105,22 @@ public class LightNovelEditFragment extends Fragment {
         arguments.putString(JsonKeys.COMPLETED.toString(), completed);
         arguments.putString(JsonKeys.TRANSLATOR_SITE.toString(), translatorSite);
         arguments.putStringArrayList(JsonKeys.GENRES.toString(), genres);
+        arguments.putSerializable(CREATE_OR_EDIT_KEY, Mode.EDIT);
+
+        fragment.setArguments(arguments);
+        return fragment;
+    }
+
+    /**
+     * Creates a new instance of the fragment in create mode with all the pertinent data passed in as
+     * parameters.
+     *
+     * @return An instance of LightNovelEditFragment.
+     */
+    public static LightNovelEditFragment newCreateInstance() {
+        LightNovelEditFragment fragment = new LightNovelEditFragment();
+        Bundle arguments = new Bundle();
+        arguments.putSerializable(CREATE_OR_EDIT_KEY, Mode.CREATE);
 
         fragment.setArguments(arguments);
         return fragment;
@@ -107,13 +131,30 @@ public class LightNovelEditFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         Bundle arguments = getArguments();
-        this.mId = arguments.getInt(JsonKeys.ID.toString());
-        this.mTitle = arguments.getString(JsonKeys.TITLE.toString());
-        this.mAuthor = arguments.getString(JsonKeys.AUTHOR.toString());
-        this.mDescription = arguments.getString(JsonKeys.DESCRIPTION.toString());
-        this.mCompleted = arguments.getString(JsonKeys.COMPLETED.toString());
-        this.mTranslatorSite = arguments.getString(JsonKeys.TRANSLATOR_SITE.toString());
-        this.mGenres = arguments.getStringArrayList(JsonKeys.GENRES.toString());
+        this.mCreateOrEdit = (Mode) arguments.getSerializable(CREATE_OR_EDIT_KEY);
+        if (this.mCreateOrEdit == null) {
+            this.mCreateOrEdit = Mode.CREATE;
+        }
+
+        switch (this.mCreateOrEdit) {
+            case CREATE:
+                this.mTitle = "";
+                this.mAuthor = "";
+                this.mDescription = "";
+                this.mCompleted = "false";
+                this.mTranslatorSite = "";
+                this.mGenres = new ArrayList<>();
+                break;
+            case EDIT:
+                this.mId = arguments.getInt(JsonKeys.ID.toString());
+                this.mTitle = arguments.getString(JsonKeys.TITLE.toString());
+                this.mAuthor = arguments.getString(JsonKeys.AUTHOR.toString());
+                this.mDescription = arguments.getString(JsonKeys.DESCRIPTION.toString());
+                this.mCompleted = arguments.getString(JsonKeys.COMPLETED.toString());
+                this.mTranslatorSite = arguments.getString(JsonKeys.TRANSLATOR_SITE.toString());
+                this.mGenres = arguments.getStringArrayList(JsonKeys.GENRES.toString());
+                break;
+        }
     }
 
     @Override
@@ -126,14 +167,14 @@ public class LightNovelEditFragment extends Fragment {
         this.mDescriptionET = (EditText) view.findViewById(R.id.description);
         this.mTranslatorSiteET = (EditText) view.findViewById(R.id.translatorSite);
         this.mCompletedCB = (CheckBox) view.findViewById(R.id.completionStatus);
-        this.mGenreButton = (Button) view.findViewById(R.id.genreSelection);
-        this.mCancelBtn = (Button) view.findViewById(R.id.cancelButton);
-        this.mSaveBtn = (Button) view.findViewById(R.id.saveButton);
-        this.mGenresWLL = (WrappedLinearLayout) view.findViewById(R.id.genres);
+        Button editGenres = (Button) view.findViewById(R.id.genreSelection);
+        Button cancel = (Button) view.findViewById(R.id.cancelButton);
+        Button save = (Button) view.findViewById(R.id.saveButton);
 
-        this.mCancelBtn.setOnClickListener(this.mCancelListener);
-        this.mSaveBtn.setOnClickListener(this.mSaveListener);
-        this.mGenreButton.setOnClickListener(new View.OnClickListener() {
+
+        cancel.setOnClickListener(this.mCancelListener);
+        save.setOnClickListener(this.mSaveListener);
+        editGenres.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity().getApplicationContext(), GenreSelectionActivity.class);
@@ -142,10 +183,6 @@ public class LightNovelEditFragment extends Fragment {
                 startActivityForResult(intent, LiteraryTrackerUtils.GENRE_REQUEST_CODE);
             }
         });
-
-        Log.d(TAG, mTitle);
-        Log.d(TAG, mAuthor);
-        Log.d(TAG, mDescription);
 
         mTitleET.setText(mTitle);
         mAuthorET.setText(mAuthor);
@@ -156,17 +193,18 @@ public class LightNovelEditFragment extends Fragment {
         return view;
     }
 
-    /* Called when  */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "test");
-
         if (requestCode == LiteraryTrackerUtils.GENRE_REQUEST_CODE) {
-            Log.d(TAG, "Result is from " + requestCode);
+            Log.d(TAG, "Received result from Activity with code " + requestCode);
+
+            if (resultCode == LiteraryTrackerUtils.GENRE_SUCCESS_CODE) {
+                /* Updates the stored genres to be the selection returned from the Genre Selection Activity */
+                this.mGenres = data.getStringArrayListExtra(JsonKeys.GENRES.toString());
+            }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
-        // TODO
     }
 
     View.OnClickListener mSaveListener = new View.OnClickListener() {
@@ -180,13 +218,23 @@ public class LightNovelEditFragment extends Fragment {
                 postData.put(JsonKeys.COMPLETED.toString(), mCompletedCB.isChecked());
                 postData.put(JsonKeys.DESCRIPTION.toString(), mDescriptionET.getText());
                 postData.put(JsonKeys.TRANSLATOR_SITE.toString(), mTranslatorSiteET.getText());
+                postData.put(JsonKeys.GENRES.toString(), TextUtils.join(",", mGenres));
 
-                String genres = "fantasy,martial arts,adventure,action";
-                postData.put(JsonKeys.GENRES.toString(), genres);
+                // TODO: validation
 
-                // TODO: include genres
+                JsonObjectRequest json;
 
-                JsonObjectRequest json = new JsonObjectRequest(Request.Method.POST, ServerInfo.LIGHT_NOVEL.getUpdateUrl(mId), postData, onSuccess, onError);
+                switch (mCreateOrEdit) {
+                    case EDIT:
+                        json = new JsonObjectRequest(Request.Method.POST, ServerInfo.LIGHT_NOVEL.getUpdateUrl(mId), postData, onEditSuccess, onError);
+                        break;
+                    case CREATE:
+                        json = new JsonObjectRequest(Request.Method.POST, ServerInfo.LIGHT_NOVEL.getCreateUrl(), postData, onCreateSuccess, onError);
+                        break;
+                    default:
+                        json = new JsonObjectRequest(Request.Method.POST, ServerInfo.LIGHT_NOVEL.getCreateUrl(), postData, onCreateSuccess, onError); // Defaults to create rather than
+                }
+
                 VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(json);
 
 
@@ -204,7 +252,10 @@ public class LightNovelEditFragment extends Fragment {
         }
     };
 
-    Response.Listener<JSONObject> onSuccess = new Response.Listener<JSONObject>() {
+    /**
+     * The callback for a successful network query.
+     */
+    Response.Listener<JSONObject> onEditSuccess = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             if (response != null)
@@ -214,6 +265,22 @@ public class LightNovelEditFragment extends Fragment {
 
             getActivity().setResult(LiteraryTrackerUtils.EDIT_SUCCESS_CODE, returnData);
             getActivity().finish(); // Finishes the activity and goes back to the detail screen
+        }
+    };
+
+    /**
+     * The callback for a successful network query to create a Light Novel.
+     */
+    Response.Listener<JSONObject> onCreateSuccess = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            if (response != null)
+                Log.d(TAG, response.toString());
+            Intent returnData = new Intent();
+            returnData.putExtra(JsonKeys.ID.toString(), mId);
+
+            getActivity().setResult(LiteraryTrackerUtils.CREATE_SUCCESS_CODE, returnData);
+            getActivity().finish(); // Finishes the activity and goes back to the list screen
         }
     };
 
