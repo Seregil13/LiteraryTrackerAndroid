@@ -64,7 +64,7 @@ public class LightNovelFormActivity extends AppCompatActivity {
 
             switch (requestCode) {
                 case LiteraryTrackerUtils.CREATE_REQUEST_CODE:
-                    fragment = new LightNovelCreateFragment();
+                    fragment = LightNovelEditFragment.newCreateInstance();
                     break;
                 case LiteraryTrackerUtils.EDIT_REQUEST_CODE:
 
@@ -78,7 +78,7 @@ public class LightNovelFormActivity extends AppCompatActivity {
                     fragment = LightNovelEditFragment.newEditInstance(id, title, author, description, completed, tsite, genres);
                     break;
                 default:
-                    fragment = new LightNovelCreateFragment();
+                    fragment = LightNovelEditFragment.newCreateInstance();
                     break;
             }
 

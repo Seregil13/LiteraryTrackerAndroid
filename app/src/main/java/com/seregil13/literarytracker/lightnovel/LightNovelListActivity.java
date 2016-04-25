@@ -81,15 +81,21 @@ public class LightNovelListActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
+        if (toolbar != null) {
+            toolbar.setTitle(getTitle());
+        }
 
         sendRequest();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(fabListener);
+        if (fab != null) {
+            fab.setOnClickListener(fabListener);
+        }
 
-        View recyclerView = findViewById(R.id.lightnovel_list);
-        setupRecyclerView((RecyclerView) recyclerView);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.lightnovel_list);
+        if (recyclerView != null) {
+            setupRecyclerView(recyclerView);
+        }
 
         if (findViewById(R.id.lightnovel_detail_container) != null) {
             // The detail container view will be present only in the
@@ -118,7 +124,7 @@ public class LightNovelListActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == LiteraryTrackerUtils.CREATE_REQUEST_CODE) {
-            //TODO: refresh list
+            sendRequest();
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -147,6 +153,9 @@ public class LightNovelListActivity extends AppCompatActivity {
 
     };
 
+    /**
+     *
+     */
     Response.ErrorListener onError = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
@@ -154,6 +163,9 @@ public class LightNovelListActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     *
+     */
     private View.OnClickListener fabListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -162,9 +174,6 @@ public class LightNovelListActivity extends AppCompatActivity {
             Intent intent = new Intent(context, LightNovelFormActivity.class);
 
             startActivityForResult(intent, LiteraryTrackerUtils.CREATE_REQUEST_CODE);
-
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG) // TODO Make it go to new ln page
-                    .setAction("Action", null).show();
         }
     };
 

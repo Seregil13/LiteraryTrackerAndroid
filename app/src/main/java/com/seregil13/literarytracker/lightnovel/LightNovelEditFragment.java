@@ -233,7 +233,7 @@ public class LightNovelEditFragment extends Fragment {
                         json = new JsonObjectRequest(Request.Method.POST, ServerInfo.LIGHT_NOVEL.getCreateUrl(), postData, onCreateSuccess, onError);
                         break;
                     default:
-                        json = new JsonObjectRequest(Request.Method.POST, ServerInfo.LIGHT_NOVEL.getCreateUrl(), postData, onCreateSuccess, onError); // Defaults to create rather than
+                        json = new JsonObjectRequest(Request.Method.POST, ServerInfo.LIGHT_NOVEL.getCreateUrl(), postData, onCreateSuccess, onError); // Defaults to create rather than edit
                 }
 
                 VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(json);

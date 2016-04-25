@@ -57,6 +57,8 @@ public class LiteraryTrackerUtils {
      */
     public static ArrayList<String> jsonArrayToList(JSONArray jsonArray) throws Exception {
 
+        if (jsonArray.length() == 0) return new ArrayList<>();
+
         if (!(jsonArray.get(0) instanceof String)) throw new Exception("Must pass in a json array with only string values");
 
         ArrayList<String> result = new ArrayList<>();
