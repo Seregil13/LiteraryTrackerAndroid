@@ -36,7 +36,7 @@ public enum JsonKeys {
     AUTHOR("author"),
     DESCRIPTION("description"),
     COMPLETED("completed"),
-    TRANSLATOR_SITE("translator_site"),
+    TRANSLATOR_SITE("translatorSite"),
     GENRES("genres");
 
     String name;
