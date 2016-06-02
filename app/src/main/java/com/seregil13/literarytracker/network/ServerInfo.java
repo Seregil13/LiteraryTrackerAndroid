@@ -1,0 +1,1 @@
+/home/alec/development/configurationfiles/LiteraryTrackerAndroid/ServerInfo.java
