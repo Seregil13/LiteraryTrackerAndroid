@@ -29,13 +29,17 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.seregil13.literarytracker.lightnovel.LightNovelListActivity;
+import com.seregil13.literarytracker.sqlite.LiteraryTrackerContract;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,18 +48,26 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        Log.d(LOG_TAG, LiteraryTrackerContract.GenresEntry.CREATE_TABLE);
+        Log.d(LOG_TAG, LiteraryTrackerContract.BookEntry.CREATE_TABLE);
+        Log.d(LOG_TAG, LiteraryTrackerContract.LightNovelEntry.CREATE_TABLE);
+        Log.d(LOG_TAG, LiteraryTrackerContract.LightNovelGenreEntry.CREATE_TABLE);
+        Log.d(LOG_TAG, LiteraryTrackerContract.BooksGenresEntry.CREATE_TABLE);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        if (fab != null) {
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-                Intent intent = new Intent(MainActivity.this, LightNovelListActivity.class);
-                startActivity(intent);
+                    Intent intent = new Intent(MainActivity.this, LightNovelListActivity.class);
+                    startActivity(intent);
 
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-            }
-        });
+    //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+    //                        .setAction("Action", null).show();
+                }
+            });
+        }
     }
 
     @Override

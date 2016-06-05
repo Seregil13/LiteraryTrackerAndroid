@@ -15,13 +15,17 @@ public class LiteraryTrackerDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL(LiteraryTrackerContract.GenresEntry.CREATE_TABLE);
         db.execSQL(LiteraryTrackerContract.LightNovelEntry.CREATE_TABLE);
         db.execSQL(LiteraryTrackerContract.BookEntry.CREATE_TABLE);
         db.execSQL(LiteraryTrackerContract.MangaEntry.CREATE_TABLE);
+        db.execSQL(LiteraryTrackerContract.LightNovelGenreEntry.CREATE_TABLE);
+        db.execSQL(LiteraryTrackerContract.BooksGenresEntry.CREATE_TABLE);
+        db.execSQL(LiteraryTrackerContract.MangaGenresEntry.CREATE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        // TODO: don't obliterate the database when upgrading ...
     }
 }
