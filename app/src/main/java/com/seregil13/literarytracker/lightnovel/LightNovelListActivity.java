@@ -29,7 +29,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -130,7 +129,7 @@ public class LightNovelListActivity extends AppCompatActivity {
         }
     }
 
-    Response.Listener<JSONArray> onSuccess = new Response.Listener<JSONArray>() {
+    private Response.Listener<JSONArray> onSuccess = new Response.Listener<JSONArray>() {
         @Override
         public void onResponse(JSONArray response) {
             List<LightNovelListContent.LightNovel> list = new ArrayList<>();
@@ -156,7 +155,7 @@ public class LightNovelListActivity extends AppCompatActivity {
     /**
      *
      */
-    Response.ErrorListener onError = new Response.ErrorListener() {
+    private Response.ErrorListener onError = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
             Log.d(TAG, error.getMessage());
@@ -177,11 +176,11 @@ public class LightNovelListActivity extends AppCompatActivity {
         }
     };
 
-    public class SimpleItemRecyclerViewAdapter extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+    class SimpleItemRecyclerViewAdapter extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private List<LightNovelListContent.LightNovel> mNovels;
 
-        public SimpleItemRecyclerViewAdapter(List<LightNovelListContent.LightNovel> items) {
+        SimpleItemRecyclerViewAdapter(List<LightNovelListContent.LightNovel> items) {
             mNovels = items;
         }
 
@@ -226,23 +225,23 @@ public class LightNovelListActivity extends AppCompatActivity {
             return mNovels.size();
         }
 
-        public void updateNovelList(List<LightNovelListContent.LightNovel> novels) {
+        void updateNovelList(List<LightNovelListContent.LightNovel> novels) {
             this.mNovels.clear();
             this.mNovels.addAll(novels);
             this.notifyDataSetChanged();
         }
 
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public final View mView;
-            public final TextView mTitleView;
-            public final TextView mAuthorView;
-            public LightNovelListContent.LightNovel mItem;
+        class ViewHolder extends RecyclerView.ViewHolder {
+            final View mView;
+            final TextView mTitleView;
+            final TextView mAuthorView;
+            LightNovelListContent.LightNovel mItem;
 
-            public ViewHolder(View view) {
+            ViewHolder(View view) {
                 super(view);
                 mView = view;
                 mTitleView = (TextView) view.findViewById(R.id.title);
-                mAuthorView = (TextView) view.findViewById(R.id.author);
+                mAuthorView = (TextView) view.findViewById(R.id.author_label);
             }
 
             @Override

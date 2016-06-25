@@ -7,6 +7,7 @@ import android.provider.BaseColumns;
 /**
  * Defines the schema for the LiteraryTracker database;
  */
+@SuppressWarnings("ALL")
 public class LiteraryTrackerContract {
 
     public static final String CONTENT_AUTHORITY = "com.seregil13.literarytracker";
@@ -47,6 +48,7 @@ public class LiteraryTrackerContract {
         public static final String COLUMN_DESCRIPTION = "description";
         public static final String COLUMN_COMPLETED = "completed";
         public static final String COLUMN_TRANSLATOR_SITE = "translator_site";
+        public static final String COLUMN_COVER_ART_URL = "cover_art";
 
         public static final String CREATE_TABLE = "CREATE TABLE " +
                 TABLE_NAME + "(" +
@@ -55,7 +57,8 @@ public class LiteraryTrackerContract {
                 COLUMN_AUTHOR + TEXT + NOT_NULL + COMMA +
                 COLUMN_DESCRIPTION + TEXT + NOT_NULL + COMMA +
                 COLUMN_COMPLETED + INTEGER + NOT_NULL + COMMA +
-                COLUMN_TRANSLATOR_SITE + TEXT + NOT_NULL + ");";
+                COLUMN_TRANSLATOR_SITE + TEXT + NOT_NULL + COMMA +
+                COLUMN_COVER_ART_URL + TEXT + NOT_NULL + ");";
 
         public static final String DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 

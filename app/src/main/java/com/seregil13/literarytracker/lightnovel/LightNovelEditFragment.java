@@ -47,7 +47,6 @@ import com.seregil13.literarytracker.network.ServerInfo;
 import com.seregil13.literarytracker.network.VolleySingleton;
 import com.seregil13.literarytracker.util.JsonKeys;
 import com.seregil13.literarytracker.util.LiteraryTrackerUtils;
-import com.seregil13.widgetlibrary.WrappedLinearLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,13 +60,7 @@ public class LightNovelEditFragment extends Fragment {
 
     private static final String TAG = "LNEditFragment";
 
-    private int mId;
-    private String mTitle;
-    private String mAuthor;
-    private String mDescription;
-    private String mCompleted;
-    private String mTranslatorSite;
-    private ArrayList<String> mGenres;
+    private LightNovelModel data;
 
     private Mode mCreateOrEdit;
 
@@ -139,22 +132,18 @@ public class LightNovelEditFragment extends Fragment {
 
         switch (this.mCreateOrEdit) {
             case CREATE:
-                this.mTitle = "";
-                this.mAuthor = "";
-                this.mDescription = "";
-                this.mCompleted = "false";
-                this.mTranslatorSite = "";
-                this.mGenres = new ArrayList<>();
+                this.data = new LightNovelModel(-1, "", "", "", "", "", new ArrayList<String>());
                 break;
             case EDIT:
-                this.mId = arguments.getInt(JsonKeys.ID.toString());
-                this.mTitle = arguments.getString(JsonKeys.TITLE.toString());
-                this.mAuthor = arguments.getString(JsonKeys.AUTHOR.toString());
-                this.mDescription = arguments.getString(JsonKeys.DESCRIPTION.toString());
-                this.mCompleted = arguments.getString(JsonKeys.COMPLETED.toString());
-                this.mTranslatorSite = arguments.getString(JsonKeys.TRANSLATOR_SITE.toString());
-                this.mGenres = arguments.getStringArrayList(JsonKeys.GENRES.toString());
-                break;
+                this.data = new LightNovelModel(
+                        arguments.getInt(JsonKeys.ID.toString()),
+                        arguments.getString(JsonKeys.TITLE.toString()),
+                        arguments.getString(JsonKeys.AUTHOR.toString()),
+                        arguments.getString(JsonKeys.DESCRIPTION.toString()),
+                        arguments.getString(JsonKeys.COMPLETED.toString()),
+                        arguments.getString(JsonKeys.TRANSLATOR_SITE.toString()),
+                        arguments.getStringArrayList(JsonKeys.GENRES.toString())
+                );
         }
     }
 
@@ -164,7 +153,7 @@ public class LightNovelEditFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_light_novel_edit, container, false);
 
         this.mTitleET = (EditText) view.findViewById(R.id.title);
-        this.mAuthorET = (EditText) view.findViewById(R.id.author);
+        this.mAuthorET = (EditText) view.findViewById(R.id.author_label);
         this.mDescriptionET = (EditText) view.findViewById(R.id.description);
         this.mTranslatorSiteET = (EditText) view.findViewById(R.id.translatorSite);
         this.mCompletedCB = (CheckBox) view.findViewById(R.id.completionStatus);
@@ -179,33 +168,33 @@ public class LightNovelEditFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity().getApplicationContext(), GenreSelectionActivity.class);
-                intent.putStringArrayListExtra(JsonKeys.GENRES.toString(), mGenres);
+                intent.putStringArrayListExtra(JsonKeys.GENRES.toString(), (ArrayList<String>) data.getGenres());
 
                 startActivityForResult(intent, LiteraryTrackerUtils.GENRE_REQUEST_CODE);
             }
         });
 
-        mTitleET.setText(mTitle);
-        mAuthorET.setText(mAuthor);
-        mDescriptionET.setText(mDescription);
-        mTranslatorSiteET.setText(mTranslatorSite);
-        mCompletedCB.setChecked(Boolean.parseBoolean(mCompleted));
+        mTitleET.setText(this.data.getTitle());
+        mAuthorET.setText(this.data.getAuthor());
+        mDescriptionET.setText(this.data.getDescription());
+        mTranslatorSiteET.setText(this.data.getDescription());
+        mCompletedCB.setChecked(Boolean.parseBoolean(this.data.getCompleted()));
 
         return view;
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == LiteraryTrackerUtils.GENRE_REQUEST_CODE) {
             Log.d(TAG, "Received result from Activity with code " + requestCode);
 
             if (resultCode == LiteraryTrackerUtils.GENRE_SUCCESS_CODE) {
                 /* Updates the stored genres to be the selection returned from the Genre Selection Activity */
-                this.mGenres = data.getStringArrayListExtra(JsonKeys.GENRES.toString());
+                this.data.setGenres(intent.getStringArrayListExtra(JsonKeys.GENRES.toString()));
             }
         }
 
-        super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, intent);
     }
 
     View.OnClickListener mSaveListener = new View.OnClickListener() {
@@ -219,7 +208,7 @@ public class LightNovelEditFragment extends Fragment {
                 postData.put(JsonKeys.COMPLETED.toString(), mCompletedCB.isChecked());
                 postData.put(JsonKeys.DESCRIPTION.toString(), mDescriptionET.getText());
                 postData.put(JsonKeys.TRANSLATOR_SITE.toString(), mTranslatorSiteET.getText());
-                postData.put(JsonKeys.GENRES.toString(), TextUtils.join(",", mGenres));
+                postData.put(JsonKeys.GENRES.toString(), TextUtils.join(",", data.getGenres()));
 
                 // TODO: validation
 
@@ -227,7 +216,7 @@ public class LightNovelEditFragment extends Fragment {
 
                 switch (mCreateOrEdit) {
                     case EDIT:
-                        json = new JsonObjectRequest(Request.Method.POST, ServerInfo.LIGHT_NOVEL.getUpdateUrl(mId), postData, onEditSuccess, onError);
+                        json = new JsonObjectRequest(Request.Method.POST, ServerInfo.LIGHT_NOVEL.getUpdateUrl(data.getId()), postData, onEditSuccess, onError);
                         break;
                     case CREATE:
                         json = new JsonObjectRequest(Request.Method.POST, ServerInfo.LIGHT_NOVEL.getCreateUrl(), postData, onCreateSuccess, onError);
@@ -262,7 +251,7 @@ public class LightNovelEditFragment extends Fragment {
             if (response != null)
                 Log.d(TAG, response.toString());
             Intent returnData = new Intent();
-            returnData.putExtra(JsonKeys.ID.toString(), mId);
+            returnData.putExtra(JsonKeys.ID.toString(), data.getId());
 
             getActivity().setResult(LiteraryTrackerUtils.EDIT_SUCCESS_CODE, returnData);
             getActivity().finish(); // Finishes the activity and goes back to the detail screen
@@ -278,7 +267,7 @@ public class LightNovelEditFragment extends Fragment {
             if (response != null)
                 Log.d(TAG, response.toString());
             Intent returnData = new Intent();
-            returnData.putExtra(JsonKeys.ID.toString(), mId);
+            returnData.putExtra(JsonKeys.ID.toString(), data.getId());
 
             getActivity().setResult(LiteraryTrackerUtils.CREATE_SUCCESS_CODE, returnData);
             getActivity().finish(); // Finishes the activity and goes back to the list screen

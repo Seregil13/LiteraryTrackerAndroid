@@ -39,4 +39,5 @@
     <string name="cancel">Cancel</string>
     <string name="confirm">confirm</string>
     <string name="edit_genres">Edit Genres</string>
+    <string name="genre">Genres</string>
 </resources>

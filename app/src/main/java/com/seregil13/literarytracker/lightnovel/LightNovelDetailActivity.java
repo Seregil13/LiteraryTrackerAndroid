@@ -52,15 +52,31 @@ public class LightNovelDetailActivity extends AppCompatActivity implements OnDat
     private static final String TAG = "LNDetailActivity";
 
     /* Detailed info of the current Light Novel */
-    private int mId;
-    private String mTitle;
-    private String mAuthor;
-    private String mDescription;
-    private String mCompleted;
-    private String mTranslatorSite;
-    private List<String> mGenres;
+    LightNovelModel data;
 
     private LightNovelDetailFragment mDetailFragment;
+    /**
+     * Handles the onclick event for the floating action buttons
+     */
+    private View.OnClickListener mFabListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Context context = view.getContext();
+
+            Intent intent = new Intent(context, LightNovelFormActivity.class);
+            intent.putExtra(JsonKeys.ID.toString(), data.getId());
+            intent.putExtra(JsonKeys.TITLE.toString(), data.getTitle());
+            intent.putExtra(JsonKeys.AUTHOR.toString(), data.getAuthor());
+            intent.putExtra(JsonKeys.DESCRIPTION.toString(), data.getDescription());
+            intent.putExtra(JsonKeys.COMPLETED.toString(), data.getCompleted());
+            intent.putExtra(JsonKeys.TRANSLATOR_SITE.toString(), data.getTranslatorSite());
+            intent.putStringArrayListExtra(JsonKeys.GENRES.toString(), (ArrayList<String>) data.getGenres());
+            intent.putExtra(LightNovelFormActivity.REQUEST_CODE_KEY, LiteraryTrackerUtils.EDIT_REQUEST_CODE);
+
+            startActivityForResult(intent, LiteraryTrackerUtils.EDIT_REQUEST_CODE);
+//                context.startActivity(intent);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +87,8 @@ public class LightNovelDetailActivity extends AppCompatActivity implements OnDat
 
         /* TODO: make fab open edit light novel */
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(mFabListener);
+        if (fab != null)
+            fab.setOnClickListener(mFabListener);
 
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
@@ -133,35 +150,6 @@ public class LightNovelDetailActivity extends AppCompatActivity implements OnDat
 
     @Override
     public void setData(int id, String title, String author, String description, String completed, String translatorSite, List<String> genres) {
-        this.mId = id;
-        this.mTitle = title;
-        this.mAuthor = author;
-        this.mDescription = description;
-        this.mCompleted = completed;
-        this.mTranslatorSite = translatorSite;
-        this.mGenres = genres;
+        this.data = new LightNovelModel(id, title, author, description, completed, translatorSite, genres);
     }
-
-    /**
-     * Handles the onclick event for the floating action buttons
-     */
-    private View.OnClickListener mFabListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            Context context = view.getContext();
-
-            Intent intent = new Intent(context, LightNovelFormActivity.class);
-            intent.putExtra(JsonKeys.ID.toString(), mId);
-            intent.putExtra(JsonKeys.TITLE.toString(), mTitle);
-            intent.putExtra(JsonKeys.AUTHOR.toString(), mAuthor);
-            intent.putExtra(JsonKeys.DESCRIPTION.toString(), mDescription);
-            intent.putExtra(JsonKeys.COMPLETED.toString(), mCompleted);
-            intent.putExtra(JsonKeys.TRANSLATOR_SITE.toString(), mTranslatorSite);
-            intent.putStringArrayListExtra(JsonKeys.GENRES.toString(), (ArrayList<String>) mGenres);
-            intent.putExtra(LightNovelFormActivity.REQUEST_CODE_KEY, LiteraryTrackerUtils.EDIT_REQUEST_CODE);
-
-            startActivityForResult(intent, LiteraryTrackerUtils.EDIT_REQUEST_CODE);
-//                context.startActivity(intent);
-        }
-    };
 }

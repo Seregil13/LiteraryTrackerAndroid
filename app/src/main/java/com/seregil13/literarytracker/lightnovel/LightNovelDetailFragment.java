@@ -104,11 +104,11 @@ public class LightNovelDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.lightnovel_detail, container, false);
 
-        mAuthorTextView = (TextView) view.findViewById(R.id.author);
+        mAuthorTextView = (TextView) view.findViewById(R.id.author_label);
         mCompletedTextView = (TextView) view.findViewById(R.id.completionStatus);
         mDescriptionTextView = (TextView) view.findViewById(R.id.description);
         mTranslatorSiteTextView = (TextView) view.findViewById(R.id.translatorSite);
-        mGenresLayout = (WrappedLinearLayout) view.findViewById(R.id.genres);
+        mGenresLayout = (WrappedLinearLayout) view.findViewById(R.id.genre_list);
 
         return view;
     }

@@ -67,7 +67,6 @@ public class LightNovelFormActivity extends AppCompatActivity {
                     fragment = LightNovelEditFragment.newCreateInstance();
                     break;
                 case LiteraryTrackerUtils.EDIT_REQUEST_CODE:
-
                     int id = getIntent().getIntExtra(JsonKeys.ID.toString(), 1);
                     String title = getIntent().getStringExtra(JsonKeys.TITLE.toString());
                     String author = getIntent().getStringExtra(JsonKeys.AUTHOR.toString());
