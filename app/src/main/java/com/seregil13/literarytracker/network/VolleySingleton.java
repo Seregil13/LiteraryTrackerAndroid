@@ -32,7 +32,7 @@ import com.android.volley.toolbox.Volley;
 
 /**
  * @author Alec
- * @since 03 08, 2016
+ * @since March 08, 2016
  */
 public class VolleySingleton {
 

@@ -26,13 +26,19 @@ package com.seregil13.literarytracker.lightnovel;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -42,6 +48,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.seregil13.literarytracker.R;
 import com.seregil13.literarytracker.network.ServerInfo;
 import com.seregil13.literarytracker.network.VolleySingleton;
+import com.seregil13.literarytracker.sqlite.LiteraryTrackerContract;
+import com.seregil13.literarytracker.sqlite.LiteraryTrackerDbHelper;
 import com.seregil13.literarytracker.util.JsonKeys;
 import com.seregil13.literarytracker.util.LiteraryTrackerUtils;
 import com.seregil13.widgetlibrary.WrappedLinearLayout;
@@ -49,6 +57,7 @@ import com.seregil13.widgetlibrary.WrappedLinearLayout;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A fragment representing a single LightNovel detail screen.
@@ -58,14 +67,16 @@ import java.util.ArrayList;
  */
 public class LightNovelDetailFragment extends Fragment {
 
-    public static final String TAG = "LNDetailFragment";
+    private static final String TAG = "LNDetailFragment";
+
+    private int id;
 
     /* Views */
     private TextView mAuthorTextView;
     private TextView mCompletedTextView;
     private TextView mDescriptionTextView;
     private TextView mTranslatorSiteTextView;
-    private WrappedLinearLayout mGenresLayout;
+    private LinearLayout mGenresLayout;
 
     private OnDataFetched mActivity;
 
@@ -81,11 +92,8 @@ public class LightNovelDetailFragment extends Fragment {
 
         if (getArguments().containsKey(JsonKeys.ID.toString())) {
 
-            int id = getArguments().getInt(JsonKeys.ID.toString());
+            id = getArguments().getInt(JsonKeys.ID.toString());
             String title = getArguments().getString(JsonKeys.TITLE.toString(), "Light Novel");
-
-            /* Sends a request for a json object via volley */
-            requestDetails(id);
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
@@ -95,22 +103,67 @@ public class LightNovelDetailFragment extends Fragment {
         }
     }
 
-    public void requestDetails(int id) {
-        JsonObjectRequest json = new JsonObjectRequest(Request.Method.GET, ServerInfo.LIGHT_NOVEL.getDetailUrl(id), null, onSuccess, onError);
-        VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(json);
+    public void getDetails(long id) {
+        LiteraryTrackerDbHelper dbHelper = new LiteraryTrackerDbHelper(getContext());
+
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = dbHelper.readLightNovelDetails(db, id);
+        List<String> genres = new ArrayList<>();
+
+        while(cursor.moveToNext()) {
+            int mId = cursor.getInt(cursor.getColumnIndexOrThrow(LiteraryTrackerContract.LightNovelEntry._ID));
+            String title = cursor.getString(cursor.getColumnIndexOrThrow(LiteraryTrackerContract.LightNovelEntry.COLUMN_TITLE));
+            String mAuthor = cursor.getString(cursor.getColumnIndexOrThrow(LiteraryTrackerContract.LightNovelEntry.COLUMN_AUTHOR));
+            String mDescription = cursor.getString(cursor.getColumnIndexOrThrow(LiteraryTrackerContract.LightNovelEntry.COLUMN_DESCRIPTION));
+            int mCompleted = cursor.getInt(cursor.getColumnIndexOrThrow(LiteraryTrackerContract.LightNovelEntry.COLUMN_COMPLETED));
+            String mTranslatorSite = cursor.getString(cursor.getColumnIndexOrThrow(LiteraryTrackerContract.LightNovelEntry.COLUMN_TRANSLATOR_SITE));
+            genres.add(cursor.getString(cursor.getColumnIndexOrThrow(LiteraryTrackerContract.GenresEntry.COLUMN_NAME)));
+
+            mActivity.setData(mId, title, mAuthor, mDescription, mCompleted, mTranslatorSite, null);
+
+            mAuthorTextView.setText(mAuthor);
+//            mCompletedTextView.setText(mCompleted != 0 ? "Completed" : "In Progress");
+            mDescriptionTextView.setText(mDescription);
+            mTranslatorSiteTextView.setText(mTranslatorSite);
+
+            ((CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout)).setTitle(title);
+        }
+
+        for (String g : genres) {
+            TextView v = new TextView(mGenresLayout.getContext());
+            v.setBackground(getResources().getDrawable(R.drawable.genres_background));
+            v.setPadding(10, 5, 10, 5);
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.setMargins(5,15,5,15);
+
+            v.setLayoutParams(params);
+            v.setText(g);
+            mGenresLayout.addView(v);
+        }
+
+        cursor.close();
+        db.close();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.lightnovel_detail, container, false);
 
-        mAuthorTextView = (TextView) view.findViewById(R.id.author_label);
+        mAuthorTextView = (TextView) view.findViewById(R.id.author);
         mCompletedTextView = (TextView) view.findViewById(R.id.completionStatus);
         mDescriptionTextView = (TextView) view.findViewById(R.id.description);
-        mTranslatorSiteTextView = (TextView) view.findViewById(R.id.translatorSite);
-        mGenresLayout = (WrappedLinearLayout) view.findViewById(R.id.genre_list);
+        mTranslatorSiteTextView = (TextView) view.findViewById(R.id.translator_site);
+        mGenresLayout = (LinearLayout) view.findViewById(R.id.genre_list);
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        getDetails(id);
     }
 
     @Override
@@ -118,46 +171,4 @@ public class LightNovelDetailFragment extends Fragment {
         super.onAttach(context);
         this.mActivity = (OnDataFetched) context;
     }
-
-    /**
-     * The callback function for a successful network query
-     */
-    Response.Listener<JSONObject> onSuccess = new Response.Listener<JSONObject>() {
-        @Override
-        public void onResponse(JSONObject response) {
-            try {
-                int mId = response.getInt(JsonKeys.ID.toString());
-                String mTitle = response.getString(JsonKeys.TITLE.toString());
-                String mAuthor = response.getString(JsonKeys.AUTHOR.toString());
-                String mDescription = response.getString(JsonKeys.DESCRIPTION.toString());
-                String mCompleted = response.getString(JsonKeys.COMPLETED.toString());
-                String mTranslatorSite = response.getString(JsonKeys.TRANSLATOR_SITE.toString());
-                ArrayList<String> mGenres = LiteraryTrackerUtils.jsonArrayToList(response.getJSONArray(JsonKeys.GENRES.toString()));
-
-                mActivity.setData(mId, mTitle, mAuthor, mDescription, mCompleted, mTranslatorSite, mGenres);
-
-                mAuthorTextView.setText(mAuthor);
-                mCompletedTextView.setText(Boolean.parseBoolean(mCompleted) ? "Completed" : "In Progress");
-                mDescriptionTextView.setText(mDescription);
-                mTranslatorSiteTextView.setText(mTranslatorSite);
-
-                mGenresLayout.removeAllViews(); // Removes the existing views
-                mGenresLayout.addTextViews(mGenres); // Adds the new genres to the WrappedLinearLayout
-
-                ((CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout)).setTitle(mTitle);
-            } catch (Exception e) {
-                e.printStackTrace(); // TODO: Handle exceptions better
-            }
-        }
-    };
-
-    /**
-     * The callback function for a failed network query
-     */
-    Response.ErrorListener onError = new Response.ErrorListener() {
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            Log.d(TAG, error.getMessage());
-        }
-    };
 }

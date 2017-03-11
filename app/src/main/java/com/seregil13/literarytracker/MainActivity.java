@@ -24,22 +24,30 @@
 
 package com.seregil13.literarytracker;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.seregil13.literarytracker.lightnovel.LightNovelListActivity;
 import com.seregil13.literarytracker.sqlite.LiteraryTrackerContract;
+import com.seregil13.literarytracker.sqlite.LiteraryTrackerDbHelper;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
+
+    LiteraryTrackerDbHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +56,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Log.d(LOG_TAG, LiteraryTrackerContract.GenresEntry.CREATE_TABLE);
-        Log.d(LOG_TAG, LiteraryTrackerContract.BookEntry.CREATE_TABLE);
-        Log.d(LOG_TAG, LiteraryTrackerContract.LightNovelEntry.CREATE_TABLE);
-        Log.d(LOG_TAG, LiteraryTrackerContract.LightNovelGenreEntry.CREATE_TABLE);
-        Log.d(LOG_TAG, LiteraryTrackerContract.BooksGenresEntry.CREATE_TABLE);
+        dbHelper = new LiteraryTrackerDbHelper(this);
+
+        createTestData();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
@@ -62,9 +68,6 @@ public class MainActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(MainActivity.this, LightNovelListActivity.class);
                     startActivity(intent);
-
-    //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-    //                        .setAction("Action", null).show();
                 }
             });
         }
@@ -90,5 +93,78 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void createTestData() {
+
+        dbHelper.onUpgrade(dbHelper.getReadableDatabase(), 0, 0);
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        createGenres();
+        createLightNovels();
+
+        db.close();
+    }
+
+    public void createLightNovels() {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        long id = dbHelper.insertLightNovel(db, "I Shall Seal The Heavens", "deathblade", "Desc", false, "wuxiaworld", "lkjfds");
+        dbHelper.insertLightNovelGenre(db, id, 3);
+        dbHelper.insertLightNovelGenre(db, id, 6);
+        dbHelper.insertLightNovelGenre(db, id, 4);
+        dbHelper.insertLightNovelGenre(db, id, 8);
+        dbHelper.insertLightNovelGenre(db, id, 18);
+        dbHelper.insertLightNovelGenre(db, id, 10);
+        dbHelper.insertLightNovelGenre(db, id, 21);
+        dbHelper.insertLightNovelGenre(db, id, 11);
+        id = dbHelper.insertLightNovel(db, "Desolate Era", "Blizzard", "Desc", false, "wuxiaworld", "lkjfds");
+        dbHelper.insertLightNovelGenre(db, id, 5);
+        id = dbHelper.insertLightNovel(db, "Martial World", "Er gen", "Desc", false, "gravitytales", "lkjfds");
+        dbHelper.insertLightNovelGenre(db, id, 9);
+        id = dbHelper.insertLightNovel(db, "True Martial World", "Er gen", "Desc", false, "gravitytales", "lkjfds");
+        dbHelper.insertLightNovelGenre(db, id, 3);
+        id = dbHelper.insertLightNovel(db, "Ancient Godly Monarch", "Baby Blueman", "Desc", false, "gravitytales", "lkjfds");
+        dbHelper.insertLightNovelGenre(db, id, 13);
+
+        db.close();
+    }
+
+    public void createGenres() {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        dbHelper.insertGenre(db, "action");
+        dbHelper.insertGenre(db, "adventure");
+        dbHelper.insertGenre(db, "comedy");
+        dbHelper.insertGenre(db, "doujinshi");
+        dbHelper.insertGenre(db, "drama");
+        dbHelper.insertGenre(db, "ecchi");
+        dbHelper.insertGenre(db, "fantasy");
+        dbHelper.insertGenre(db, "gender bender");
+        dbHelper.insertGenre(db, "harem");
+        dbHelper.insertGenre(db, "historical");
+        dbHelper.insertGenre(db, "horror");
+        dbHelper.insertGenre(db, "josei");
+        dbHelper.insertGenre(db, "martial arts");
+        dbHelper.insertGenre(db, "mature");
+        dbHelper.insertGenre(db, "mecha");
+        dbHelper.insertGenre(db, "mystery");
+        dbHelper.insertGenre(db, "one shot");
+        dbHelper.insertGenre(db, "psycological");
+        dbHelper.insertGenre(db, "romance");
+        dbHelper.insertGenre(db, "school life");
+        dbHelper.insertGenre(db, "sci-fi");
+        dbHelper.insertGenre(db, "seinen");
+        dbHelper.insertGenre(db, "shoujo");
+        dbHelper.insertGenre(db, "shoujo ai");
+        dbHelper.insertGenre(db, "shounen");
+        dbHelper.insertGenre(db, "shounen ai");
+        dbHelper.insertGenre(db, "slice of life");
+        dbHelper.insertGenre(db, "sports");
+        dbHelper.insertGenre(db, "supernatural");
+        dbHelper.insertGenre(db, "tragedy");
+        dbHelper.insertGenre(db, "yaoi");
+        dbHelper.insertGenre(db, "yuri");
+
+        db.close();
     }
 }

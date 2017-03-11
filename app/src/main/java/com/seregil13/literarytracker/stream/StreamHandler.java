@@ -30,8 +30,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- *
- *
  * @author Alec
  * @since March 6, 2016
  */

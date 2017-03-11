@@ -15,12 +15,12 @@ public class LightNovelModel {
     private String translatorSite;
     private List<String> genres;
 
-    LightNovelModel(int id, String title, String author, String description, String completed, String translatorSite, List<String> genres) {
+    LightNovelModel(int id, String title, String author, String description, int completed, String translatorSite, List<String> genres) {
         this.id = id;
         this.title = title;
         this.author = author;
         this.description = description;
-        this.completed = completed;
+        this.completed = String.valueOf(completed);
         this.translatorSite = translatorSite;
         this.genres = genres;
     }

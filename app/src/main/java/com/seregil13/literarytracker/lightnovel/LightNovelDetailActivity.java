@@ -74,7 +74,6 @@ public class LightNovelDetailActivity extends AppCompatActivity implements OnDat
             intent.putExtra(LightNovelFormActivity.REQUEST_CODE_KEY, LiteraryTrackerUtils.EDIT_REQUEST_CODE);
 
             startActivityForResult(intent, LiteraryTrackerUtils.EDIT_REQUEST_CODE);
-//                context.startActivity(intent);
         }
     };
 
@@ -139,7 +138,6 @@ public class LightNovelDetailActivity extends AppCompatActivity implements OnDat
         if (requestCode == LiteraryTrackerUtils.EDIT_REQUEST_CODE) {
             if (resultCode == LiteraryTrackerUtils.EDIT_SUCCESS_CODE) {
                 //TODO: been updated refresh data
-                mDetailFragment.requestDetails(data.getIntExtra(JsonKeys.ID.toString(), 1));
             } else {
                 //TODO: canceled do nothing
             }
@@ -149,7 +147,7 @@ public class LightNovelDetailActivity extends AppCompatActivity implements OnDat
     }
 
     @Override
-    public void setData(int id, String title, String author, String description, String completed, String translatorSite, List<String> genres) {
+    public void setData(int id, String title, String author, String description, int completed, String translatorSite, List<String> genres) {
         this.data = new LightNovelModel(id, title, author, description, completed, translatorSite, genres);
     }
 }

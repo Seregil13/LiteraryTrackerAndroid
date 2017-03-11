@@ -2,7 +2,11 @@ package com.seregil13.literarytracker;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.View;
@@ -16,6 +20,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.seregil13.literarytracker.network.ServerInfo;
 import com.seregil13.literarytracker.network.VolleySingleton;
+import com.seregil13.literarytracker.sqlite.LiteraryTrackerContract;
+import com.seregil13.literarytracker.sqlite.LiteraryTrackerDbHelper;
 import com.seregil13.literarytracker.util.JsonKeys;
 import com.seregil13.literarytracker.util.LiteraryTrackerUtils;
 
@@ -48,7 +54,8 @@ public class GenreSelectionActivity extends ListActivity {
             Button cancelButton = (Button) findViewById(R.id.cancelButton);
 
             mListView.setTextFilterEnabled(true);
-            mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice);//R.layout.genres_list_item);
+            mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_multiple_choice);//R.layout.genres_list_item);
+
             mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
             mListView.setAdapter(mAdapter);
 
@@ -60,41 +67,36 @@ public class GenreSelectionActivity extends ListActivity {
     }
 
     protected void requestGenres() {
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, ServerInfo.GENRE.getListUrl(), null, mOnSuccess, mOnError);
-        VolleySingleton.getInstance(this).addToRequestQueue(request);
-    }
 
+        LiteraryTrackerDbHelper dbHelper = new LiteraryTrackerDbHelper(this);
 
+        List<String> genres = new ArrayList<>();
 
-    Response.Listener<JSONArray> mOnSuccess = new Response.Listener<JSONArray>() {
-        @Override
-        public void onResponse(JSONArray response) {
-            try {
-                List<String> genres = LiteraryTrackerUtils.jsonArrayToList(response);
-                mAdapter.clear();
-                mAdapter.addAll(genres);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-                for (String s: mGenres) {
-                    int idx = mAdapter.getPosition(s);
-                    if (idx >= 0) {
-                        getListView().setItemChecked(idx, true);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+        String[] projection = {
+                LiteraryTrackerContract.GenresEntry.COLUMN_NAME
+        };
+
+        Cursor cursor = db.query(LiteraryTrackerContract.GenresEntry.TABLE_NAME, projection, null, null, null, null, null);
+
+        while (cursor.moveToNext()) {
+            genres.add(cursor.getString(cursor.getColumnIndexOrThrow(LiteraryTrackerContract.GenresEntry.COLUMN_NAME)));
+        }
+
+        mAdapter.clear();
+        mAdapter.addAll(genres);
+
+        for (String s: mGenres) {
+            int idx = mAdapter.getPosition(s);
+            if (idx >= 0) {
+                getListView().setItemChecked(idx, true);
             }
         }
-    };
 
-    /**
-     * The callback function for a failed network query
-     */
-    Response.ErrorListener mOnError = new Response.ErrorListener() {
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            Log.d(TAG, "error happened");
-        }
-    };
+        cursor.close();
+        db.close();
+    }
 
     private View.OnClickListener mSaveListener = new View.OnClickListener() {
         @Override

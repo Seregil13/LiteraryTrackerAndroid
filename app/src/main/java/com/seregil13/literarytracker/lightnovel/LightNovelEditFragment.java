@@ -24,7 +24,9 @@
 
 package com.seregil13.literarytracker.lightnovel;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -45,6 +47,8 @@ import com.seregil13.literarytracker.GenreSelectionActivity;
 import com.seregil13.literarytracker.R;
 import com.seregil13.literarytracker.network.ServerInfo;
 import com.seregil13.literarytracker.network.VolleySingleton;
+import com.seregil13.literarytracker.sqlite.LiteraryTrackerContract;
+import com.seregil13.literarytracker.sqlite.LiteraryTrackerDbHelper;
 import com.seregil13.literarytracker.util.JsonKeys;
 import com.seregil13.literarytracker.util.LiteraryTrackerUtils;
 
@@ -63,6 +67,8 @@ public class LightNovelEditFragment extends Fragment {
     private LightNovelModel data;
 
     private Mode mCreateOrEdit;
+
+    private LiteraryTrackerDbHelper mDbHelper;
 
     /* Views */
     private EditText mTitleET;
@@ -130,9 +136,11 @@ public class LightNovelEditFragment extends Fragment {
             this.mCreateOrEdit = Mode.CREATE;
         }
 
+        this.mDbHelper = new LiteraryTrackerDbHelper(getContext());
+
         switch (this.mCreateOrEdit) {
             case CREATE:
-                this.data = new LightNovelModel(-1, "", "", "", "", "", new ArrayList<String>());
+                this.data = new LightNovelModel(-1, "", "", "", 0, "", new ArrayList<String>());
                 break;
             case EDIT:
                 this.data = new LightNovelModel(
@@ -140,7 +148,7 @@ public class LightNovelEditFragment extends Fragment {
                         arguments.getString(JsonKeys.TITLE.toString()),
                         arguments.getString(JsonKeys.AUTHOR.toString()),
                         arguments.getString(JsonKeys.DESCRIPTION.toString()),
-                        arguments.getString(JsonKeys.COMPLETED.toString()),
+                        arguments.getInt(JsonKeys.COMPLETED.toString()),
                         arguments.getString(JsonKeys.TRANSLATOR_SITE.toString()),
                         arguments.getStringArrayList(JsonKeys.GENRES.toString())
                 );
@@ -177,7 +185,7 @@ public class LightNovelEditFragment extends Fragment {
         mTitleET.setText(this.data.getTitle());
         mAuthorET.setText(this.data.getAuthor());
         mDescriptionET.setText(this.data.getDescription());
-        mTranslatorSiteET.setText(this.data.getDescription());
+        mTranslatorSiteET.setText(this.data.getTranslatorSite());
         mCompletedCB.setChecked(Boolean.parseBoolean(this.data.getCompleted()));
 
         return view;
@@ -201,36 +209,47 @@ public class LightNovelEditFragment extends Fragment {
         @Override
         public void onClick(View v) {
 
-            JSONObject postData = new JSONObject();
-            try {
-                postData.put(JsonKeys.TITLE.toString(), mTitleET.getText());
-                postData.put(JsonKeys.AUTHOR.toString(), mAuthorET.getText());
-                postData.put(JsonKeys.COMPLETED.toString(), mCompletedCB.isChecked());
-                postData.put(JsonKeys.DESCRIPTION.toString(), mDescriptionET.getText());
-                postData.put(JsonKeys.TRANSLATOR_SITE.toString(), mTranslatorSiteET.getText());
-                postData.put(JsonKeys.GENRES.toString(), TextUtils.join(",", data.getGenres()));
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
 
-                // TODO: validation
+            switch (mCreateOrEdit) {
+                case EDIT:
+                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_TITLE, mTitleET.getText().toString());
+                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_AUTHOR, mAuthorET.getText().toString());
+                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_DESCRIPTION, mDescriptionET.getText().toString());
+                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_COMPLETED, mCompletedCB.isChecked());
+                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_TRANSLATOR_SITE, mTranslatorSiteET.getText().toString());
 
-                JsonObjectRequest json;
+                    String selection = LiteraryTrackerContract.LightNovelEntry._ID + " = ?";
+                    String[] selectionArgs = {(String.valueOf(data.getId()))};
 
-                switch (mCreateOrEdit) {
-                    case EDIT:
-                        json = new JsonObjectRequest(Request.Method.POST, ServerInfo.LIGHT_NOVEL.getUpdateUrl(data.getId()), postData, onEditSuccess, onError);
-                        break;
-                    case CREATE:
-                        json = new JsonObjectRequest(Request.Method.POST, ServerInfo.LIGHT_NOVEL.getCreateUrl(), postData, onCreateSuccess, onError);
-                        break;
-                    default:
-                        json = new JsonObjectRequest(Request.Method.POST, ServerInfo.LIGHT_NOVEL.getCreateUrl(), postData, onCreateSuccess, onError); // Defaults to create rather than edit
-                }
+                    db.update(LiteraryTrackerContract.LightNovelEntry.TABLE_NAME, values, selection, selectionArgs);
+                    break;
+                case CREATE:
+                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_TITLE, mTitleET.getText().toString());
+                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_AUTHOR, mAuthorET.getText().toString());
+                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_DESCRIPTION, mDescriptionET.getText().toString());
+                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_COMPLETED, mCompletedCB.isChecked());
+                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_TRANSLATOR_SITE, mTranslatorSiteET.getText().toString());
 
-                VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(json);
+                    db.insert(LiteraryTrackerContract.LightNovelEntry.TABLE_NAME, null, values);
+                    break;
+                default:
+                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_TITLE, mTitleET.getText().toString());
+                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_AUTHOR, mAuthorET.getText().toString());
+                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_DESCRIPTION, mDescriptionET.getText().toString());
+                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_COMPLETED, mCompletedCB.isChecked());
+                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_TRANSLATOR_SITE, mTranslatorSiteET.getText().toString());
 
-
-            } catch (JSONException e) {
-                e.printStackTrace();
+                    db.insert(LiteraryTrackerContract.LightNovelEntry.TABLE_NAME, null, values);
+                    break;
             }
+
+            Intent returnData = new Intent();
+            returnData.putExtra(JsonKeys.ID.toString(), data.getId());
+
+            getActivity().setResult(LiteraryTrackerUtils.EDIT_SUCCESS_CODE, returnData);
+            getActivity().finish();
         }
     };
 
@@ -239,52 +258,6 @@ public class LightNovelEditFragment extends Fragment {
         public void onClick(View v) {
             getActivity().setResult(LiteraryTrackerUtils.EDIT_CANCEL_CODE);
             getActivity().finish();
-        }
-    };
-
-    /**
-     * The callback for a successful network query.
-     */
-    Response.Listener<JSONObject> onEditSuccess = new Response.Listener<JSONObject>() {
-        @Override
-        public void onResponse(JSONObject response) {
-            if (response != null)
-                Log.d(TAG, response.toString());
-            Intent returnData = new Intent();
-            returnData.putExtra(JsonKeys.ID.toString(), data.getId());
-
-            getActivity().setResult(LiteraryTrackerUtils.EDIT_SUCCESS_CODE, returnData);
-            getActivity().finish(); // Finishes the activity and goes back to the detail screen
-        }
-    };
-
-    /**
-     * The callback for a successful network query to create a Light Novel.
-     */
-    Response.Listener<JSONObject> onCreateSuccess = new Response.Listener<JSONObject>() {
-        @Override
-        public void onResponse(JSONObject response) {
-            if (response != null)
-                Log.d(TAG, response.toString());
-            Intent returnData = new Intent();
-            returnData.putExtra(JsonKeys.ID.toString(), data.getId());
-
-            getActivity().setResult(LiteraryTrackerUtils.CREATE_SUCCESS_CODE, returnData);
-            getActivity().finish(); // Finishes the activity and goes back to the list screen
-        }
-    };
-
-    /**
-     * The callback function for a failed network query
-     */
-    Response.ErrorListener onError = new Response.ErrorListener() {
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            Log.d(TAG, error.getMessage());
-
-            if (getView() != null) {
-                Snackbar.make(getView(), error.getMessage(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
-            }
         }
     };
 }
