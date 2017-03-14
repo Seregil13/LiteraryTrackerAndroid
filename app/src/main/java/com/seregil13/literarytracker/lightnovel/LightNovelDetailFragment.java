@@ -50,6 +50,7 @@ import com.seregil13.literarytracker.network.ServerInfo;
 import com.seregil13.literarytracker.network.VolleySingleton;
 import com.seregil13.literarytracker.sqlite.LiteraryTrackerContract;
 import com.seregil13.literarytracker.sqlite.LiteraryTrackerDbHelper;
+import com.seregil13.literarytracker.sqlite.util.LightNovelDb;
 import com.seregil13.literarytracker.util.JsonKeys;
 import com.seregil13.literarytracker.util.LiteraryTrackerUtils;
 import com.seregil13.widgetlibrary.WrappedLinearLayout;
@@ -107,11 +108,10 @@ public class LightNovelDetailFragment extends Fragment {
         LiteraryTrackerDbHelper dbHelper = new LiteraryTrackerDbHelper(getContext());
 
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = dbHelper.readLightNovelDetails(db, id);
+        Cursor cursor = LightNovelDb.readDetails(db, id);
         List<String> genres = new ArrayList<>();
 
         while(cursor.moveToNext()) {
-            int mId = cursor.getInt(cursor.getColumnIndexOrThrow(LiteraryTrackerContract.LightNovelEntry._ID));
             String title = cursor.getString(cursor.getColumnIndexOrThrow(LiteraryTrackerContract.LightNovelEntry.COLUMN_TITLE));
             String mAuthor = cursor.getString(cursor.getColumnIndexOrThrow(LiteraryTrackerContract.LightNovelEntry.COLUMN_AUTHOR));
             String mDescription = cursor.getString(cursor.getColumnIndexOrThrow(LiteraryTrackerContract.LightNovelEntry.COLUMN_DESCRIPTION));
@@ -119,7 +119,7 @@ public class LightNovelDetailFragment extends Fragment {
             String mTranslatorSite = cursor.getString(cursor.getColumnIndexOrThrow(LiteraryTrackerContract.LightNovelEntry.COLUMN_TRANSLATOR_SITE));
             genres.add(cursor.getString(cursor.getColumnIndexOrThrow(LiteraryTrackerContract.GenresEntry.COLUMN_NAME)));
 
-            mActivity.setData(mId, title, mAuthor, mDescription, mCompleted, mTranslatorSite, null);
+            mActivity.setData((int) id, title, mAuthor, mDescription, mCompleted, mTranslatorSite, genres);
 
             mAuthorTextView.setText(mAuthor);
 //            mCompletedTextView.setText(mCompleted != 0 ? "Completed" : "In Progress");

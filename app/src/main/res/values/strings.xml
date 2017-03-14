@@ -40,4 +40,6 @@
     <string name="confirm">confirm</string>
     <string name="edit_genres">Edit Genres</string>
     <string name="genre">Genres</string>
+    <string name="add_new_genre">Add new genre</string>
+    <string name="done">Done</string>
 </resources>

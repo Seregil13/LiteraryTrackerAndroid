@@ -30,8 +30,6 @@
     android:name="com.seregil13.literarytracker.lightnovel.LightNovelListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context="com.seregil13.literarytracker.lightnovel.LightNovelListActivity"
     tools:listitem="@layout/lightnovel_list_content" />

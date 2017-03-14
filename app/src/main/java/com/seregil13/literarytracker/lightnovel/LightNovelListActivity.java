@@ -34,24 +34,12 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.seregil13.literarytracker.R;
-import com.seregil13.literarytracker.network.ServerInfo;
-import com.seregil13.literarytracker.network.VolleySingleton;
 import com.seregil13.literarytracker.sqlite.LiteraryTrackerContract;
 import com.seregil13.literarytracker.sqlite.LiteraryTrackerDbHelper;
-import com.seregil13.literarytracker.util.JsonKeys;
 import com.seregil13.literarytracker.util.LiteraryTrackerUtils;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +63,7 @@ public class LightNovelListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
+    LiteraryTrackerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,10 +76,10 @@ public class LightNovelListActivity extends AppCompatActivity {
             toolbar.setTitle(getTitle());
         }
 
-//        sendRequest();
+        adapter = new LiteraryTrackerAdapter(new ArrayList<ListContent>());
 
         mDbHelper = new LiteraryTrackerDbHelper(this);
-        test();
+        getData();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
@@ -102,7 +91,6 @@ public class LightNovelListActivity extends AppCompatActivity {
             setupRecyclerView(recyclerView);
         }
 
-
         if (findViewById(R.id.lightnovel_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
@@ -112,7 +100,6 @@ public class LightNovelListActivity extends AppCompatActivity {
         }
     }
 
-    SimpleItemRecyclerViewAdapter adapter = new SimpleItemRecyclerViewAdapter(new ArrayList<ListContent>());
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setAdapter(adapter);
@@ -121,13 +108,13 @@ public class LightNovelListActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == LiteraryTrackerUtils.CREATE_REQUEST_CODE) {
-            test();
+            getData();
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
-    private void test() {
+    private void getData() {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         String[] projection = {

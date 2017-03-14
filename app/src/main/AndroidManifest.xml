@@ -58,8 +58,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.seregil13.literarytracker.lightnovel.LightNovelListActivity" />
         </activity>
-        <activity android:name=".lightnovel.LightNovelFormActivity" />
-        <activity android:name=".GenreSelectionActivity"/>
+        <activity android:name=".lightnovel.LightNovelFormActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".GenreSelectionActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

@@ -42,6 +42,8 @@ import android.widget.TextView;
 import com.seregil13.literarytracker.lightnovel.LightNovelListActivity;
 import com.seregil13.literarytracker.sqlite.LiteraryTrackerContract;
 import com.seregil13.literarytracker.sqlite.LiteraryTrackerDbHelper;
+import com.seregil13.literarytracker.sqlite.util.GenreDb;
+import com.seregil13.literarytracker.sqlite.util.LightNovelDb;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
         dbHelper = new LiteraryTrackerDbHelper(this);
 
-        createTestData();
+//        createTestData();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
@@ -109,61 +111,61 @@ public class MainActivity extends AppCompatActivity {
 
     public void createLightNovels() {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        long id = dbHelper.insertLightNovel(db, "I Shall Seal The Heavens", "deathblade", "Desc", false, "wuxiaworld", "lkjfds");
-        dbHelper.insertLightNovelGenre(db, id, 3);
-        dbHelper.insertLightNovelGenre(db, id, 6);
-        dbHelper.insertLightNovelGenre(db, id, 4);
-        dbHelper.insertLightNovelGenre(db, id, 8);
-        dbHelper.insertLightNovelGenre(db, id, 18);
-        dbHelper.insertLightNovelGenre(db, id, 10);
-        dbHelper.insertLightNovelGenre(db, id, 21);
-        dbHelper.insertLightNovelGenre(db, id, 11);
-        id = dbHelper.insertLightNovel(db, "Desolate Era", "Blizzard", "Desc", false, "wuxiaworld", "lkjfds");
-        dbHelper.insertLightNovelGenre(db, id, 5);
-        id = dbHelper.insertLightNovel(db, "Martial World", "Er gen", "Desc", false, "gravitytales", "lkjfds");
-        dbHelper.insertLightNovelGenre(db, id, 9);
-        id = dbHelper.insertLightNovel(db, "True Martial World", "Er gen", "Desc", false, "gravitytales", "lkjfds");
-        dbHelper.insertLightNovelGenre(db, id, 3);
-        id = dbHelper.insertLightNovel(db, "Ancient Godly Monarch", "Baby Blueman", "Desc", false, "gravitytales", "lkjfds");
-        dbHelper.insertLightNovelGenre(db, id, 13);
+        long id = LightNovelDb.insert(db, "I Shall Seal The Heavens", "deathblade", "Desc", false, "wuxiaworld", "lkjfds");
+        LightNovelDb.insertLiteraryGenre(db, id, 3);
+        LightNovelDb.insertLiteraryGenre(db, id, 6);
+        LightNovelDb.insertLiteraryGenre(db, id, 4);
+        LightNovelDb.insertLiteraryGenre(db, id, 8);
+        LightNovelDb.insertLiteraryGenre(db, id, 18);
+        LightNovelDb.insertLiteraryGenre(db, id, 10);
+        LightNovelDb.insertLiteraryGenre(db, id, 21);
+        LightNovelDb.insertLiteraryGenre(db, id, 11);
+        id = LightNovelDb.insert(db, "Desolate Era", "Blizzard", "Desc", false, "wuxiaworld", "lkjfds");
+        LightNovelDb.insertLiteraryGenre(db, id, 5);
+        id = LightNovelDb.insert(db, "Martial World", "Er gen", "Desc", false, "gravitytales", "lkjfds");
+        LightNovelDb.insertLiteraryGenre(db, id, 9);
+        id = LightNovelDb.insert(db, "True Martial World", "Er gen", "Desc", false, "gravitytales", "lkjfds");
+        LightNovelDb.insertLiteraryGenre(db, id, 3);
+        id = LightNovelDb.insert(db, "Ancient Godly Monarch", "Baby Blueman", "Desc", false, "gravitytales", "lkjfds");
+        LightNovelDb.insertLiteraryGenre(db, id, 13);
 
         db.close();
     }
 
     public void createGenres() {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        dbHelper.insertGenre(db, "action");
-        dbHelper.insertGenre(db, "adventure");
-        dbHelper.insertGenre(db, "comedy");
-        dbHelper.insertGenre(db, "doujinshi");
-        dbHelper.insertGenre(db, "drama");
-        dbHelper.insertGenre(db, "ecchi");
-        dbHelper.insertGenre(db, "fantasy");
-        dbHelper.insertGenre(db, "gender bender");
-        dbHelper.insertGenre(db, "harem");
-        dbHelper.insertGenre(db, "historical");
-        dbHelper.insertGenre(db, "horror");
-        dbHelper.insertGenre(db, "josei");
-        dbHelper.insertGenre(db, "martial arts");
-        dbHelper.insertGenre(db, "mature");
-        dbHelper.insertGenre(db, "mecha");
-        dbHelper.insertGenre(db, "mystery");
-        dbHelper.insertGenre(db, "one shot");
-        dbHelper.insertGenre(db, "psycological");
-        dbHelper.insertGenre(db, "romance");
-        dbHelper.insertGenre(db, "school life");
-        dbHelper.insertGenre(db, "sci-fi");
-        dbHelper.insertGenre(db, "seinen");
-        dbHelper.insertGenre(db, "shoujo");
-        dbHelper.insertGenre(db, "shoujo ai");
-        dbHelper.insertGenre(db, "shounen");
-        dbHelper.insertGenre(db, "shounen ai");
-        dbHelper.insertGenre(db, "slice of life");
-        dbHelper.insertGenre(db, "sports");
-        dbHelper.insertGenre(db, "supernatural");
-        dbHelper.insertGenre(db, "tragedy");
-        dbHelper.insertGenre(db, "yaoi");
-        dbHelper.insertGenre(db, "yuri");
+        GenreDb.insert(db, "action");
+        GenreDb.insert(db, "adventure");
+        GenreDb.insert(db, "comedy");
+        GenreDb.insert(db, "doujinshi");
+        GenreDb.insert(db, "drama");
+        GenreDb.insert(db, "ecchi");
+        GenreDb.insert(db, "fantasy");
+        GenreDb.insert(db, "gender bender");
+        GenreDb.insert(db, "harem");
+        GenreDb.insert(db, "historical");
+        GenreDb.insert(db, "horror");
+        GenreDb.insert(db, "josei");
+        GenreDb.insert(db, "martial arts");
+        GenreDb.insert(db, "mature");
+        GenreDb.insert(db, "mecha");
+        GenreDb.insert(db, "mystery");
+        GenreDb.insert(db, "one shot");
+        GenreDb.insert(db, "psycological");
+        GenreDb.insert(db, "romance");
+        GenreDb.insert(db, "school life");
+        GenreDb.insert(db, "sci-fi");
+        GenreDb.insert(db, "seinen");
+        GenreDb.insert(db, "shoujo");
+        GenreDb.insert(db, "shoujo ai");
+        GenreDb.insert(db, "shounen");
+        GenreDb.insert(db, "shounen ai");
+        GenreDb.insert(db, "slice of life");
+        GenreDb.insert(db, "sports");
+        GenreDb.insert(db, "supernatural");
+        GenreDb.insert(db, "tragedy");
+        GenreDb.insert(db, "yaoi");
+        GenreDb.insert(db, "yuri");
 
         db.close();
     }

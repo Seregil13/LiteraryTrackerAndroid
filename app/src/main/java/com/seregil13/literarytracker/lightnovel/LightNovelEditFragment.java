@@ -33,6 +33,8 @@ import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -49,6 +51,8 @@ import com.seregil13.literarytracker.network.ServerInfo;
 import com.seregil13.literarytracker.network.VolleySingleton;
 import com.seregil13.literarytracker.sqlite.LiteraryTrackerContract;
 import com.seregil13.literarytracker.sqlite.LiteraryTrackerDbHelper;
+import com.seregil13.literarytracker.sqlite.util.GenreDb;
+import com.seregil13.literarytracker.sqlite.util.LightNovelDb;
 import com.seregil13.literarytracker.util.JsonKeys;
 import com.seregil13.literarytracker.util.LiteraryTrackerUtils;
 
@@ -60,7 +64,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LightNovelEditFragment extends Fragment {
+public class LightNovelEditFragment extends Fragment implements LightNovelFormActivity.SaveData {
 
     private static final String TAG = "LNEditFragment";
 
@@ -166,12 +170,7 @@ public class LightNovelEditFragment extends Fragment {
         this.mTranslatorSiteET = (EditText) view.findViewById(R.id.translatorSite);
         this.mCompletedCB = (CheckBox) view.findViewById(R.id.completionStatus);
         Button editGenres = (Button) view.findViewById(R.id.genreSelection);
-        Button cancel = (Button) view.findViewById(R.id.cancelButton);
-        Button save = (Button) view.findViewById(R.id.saveButton);
 
-
-        cancel.setOnClickListener(this.mCancelListener);
-        save.setOnClickListener(this.mSaveListener);
         editGenres.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -205,59 +204,43 @@ public class LightNovelEditFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, intent);
     }
 
-    View.OnClickListener mSaveListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_save, menu);
+    }
+    
+    @Override
+    public Intent returnData() {
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-            SQLiteDatabase db = mDbHelper.getWritableDatabase();
-            ContentValues values = new ContentValues();
+        switch (mCreateOrEdit) {
+            case EDIT:
+                LightNovelDb.updateDetails(db, data.getId(), mTitleET.getText().toString(),
+                        mAuthorET.getText().toString(), mDescriptionET.getText().toString(),
+                        mCompletedCB.isChecked(), mTranslatorSiteET.getText().toString(), ""); // TODO
 
-            switch (mCreateOrEdit) {
-                case EDIT:
-                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_TITLE, mTitleET.getText().toString());
-                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_AUTHOR, mAuthorET.getText().toString());
-                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_DESCRIPTION, mDescriptionET.getText().toString());
-                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_COMPLETED, mCompletedCB.isChecked());
-                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_TRANSLATOR_SITE, mTranslatorSiteET.getText().toString());
+                for (String s : data.getGenres())
+                    LightNovelDb.insertLiteraryGenre(db, data.getId(), GenreDb.getIdFromName(db, s));
 
-                    String selection = LiteraryTrackerContract.LightNovelEntry._ID + " = ?";
-                    String[] selectionArgs = {(String.valueOf(data.getId()))};
+                break;
+            case CREATE:
+                LightNovelDb.insert(db, mTitleET.getText().toString(),
+                        mAuthorET.getText().toString(), mDescriptionET.getText().toString(),
+                        mCompletedCB.isChecked(), mTranslatorSiteET.getText().toString(), "");
 
-                    db.update(LiteraryTrackerContract.LightNovelEntry.TABLE_NAME, values, selection, selectionArgs);
-                    break;
-                case CREATE:
-                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_TITLE, mTitleET.getText().toString());
-                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_AUTHOR, mAuthorET.getText().toString());
-                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_DESCRIPTION, mDescriptionET.getText().toString());
-                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_COMPLETED, mCompletedCB.isChecked());
-                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_TRANSLATOR_SITE, mTranslatorSiteET.getText().toString());
-
-                    db.insert(LiteraryTrackerContract.LightNovelEntry.TABLE_NAME, null, values);
-                    break;
-                default:
-                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_TITLE, mTitleET.getText().toString());
-                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_AUTHOR, mAuthorET.getText().toString());
-                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_DESCRIPTION, mDescriptionET.getText().toString());
-                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_COMPLETED, mCompletedCB.isChecked());
-                    values.put(LiteraryTrackerContract.LightNovelEntry.COLUMN_TRANSLATOR_SITE, mTranslatorSiteET.getText().toString());
-
-                    db.insert(LiteraryTrackerContract.LightNovelEntry.TABLE_NAME, null, values);
-                    break;
-            }
-
-            Intent returnData = new Intent();
-            returnData.putExtra(JsonKeys.ID.toString(), data.getId());
-
-            getActivity().setResult(LiteraryTrackerUtils.EDIT_SUCCESS_CODE, returnData);
-            getActivity().finish();
+                for (String s : data.getGenres())
+                    LightNovelDb.insertLiteraryGenre(db, data.getId(), GenreDb.getIdFromName(db, s));
+                break;
+            default:
+                LightNovelDb.insert(db, mTitleET.getText().toString(),
+                        mAuthorET.getText().toString(), mDescriptionET.getText().toString(),
+                        mCompletedCB.isChecked(), mTranslatorSiteET.getText().toString(), "");
+                break;
         }
-    };
 
-    View.OnClickListener mCancelListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            getActivity().setResult(LiteraryTrackerUtils.EDIT_CANCEL_CODE);
-            getActivity().finish();
-        }
-    };
+        Intent returnData = new Intent();
+        returnData.putExtra(JsonKeys.ID.toString(), data.getId());
+
+        return returnData;
+    }
 }
