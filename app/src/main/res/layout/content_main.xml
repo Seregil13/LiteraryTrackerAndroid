@@ -23,39 +23,13 @@
   ~ SOFTWARE.
   -->
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/recycler_view"
+    android:name="com.seregil13.literarytracker.lightnovel.LightNovelListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    app:layoutManager="LinearLayoutManager"
     tools:context="com.seregil13.literarytracker.MainActivity"
-    tools:showIn="@layout/activity_main"
-    android:id="@+id/constraintLayout4">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/title"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginStart="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:textSize="24sp"
-        tools:text="Test Title"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textStyle="normal|bold" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/author"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/title"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginStart="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        tools:text="flowerbridgetoo" />
-</android.support.constraint.ConstraintLayout>
+    tools:listitem="@android:layout/simple_list_item_1" />

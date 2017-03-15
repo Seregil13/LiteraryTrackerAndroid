@@ -24,32 +24,24 @@
 
 package com.seregil13.literarytracker;
 
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.seregil13.literarytracker.lightnovel.LightNovelListActivity;
-import com.seregil13.literarytracker.sqlite.LiteraryTrackerContract;
-import com.seregil13.literarytracker.sqlite.LiteraryTrackerDbHelper;
-import com.seregil13.literarytracker.sqlite.util.GenreDb;
-import com.seregil13.literarytracker.sqlite.util.LightNovelDb;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
-
-    LiteraryTrackerDbHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,115 +50,62 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        dbHelper = new LiteraryTrackerDbHelper(this);
+        List<String> s = new ArrayList<>(3);
+        s.add("Light Novels");
+        s.add("Books");
+        s.add("Manga");
 
-//        createTestData();
+        RecyclerView rv = (RecyclerView) findViewById(R.id.recycler_view);
+        rv.setAdapter(new SimpleRecyclerAdapter(s));
+    }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if (fab != null) {
-            fab.setOnClickListener(new View.OnClickListener() {
+    class SimpleRecyclerAdapter extends RecyclerView.Adapter<SimpleRecyclerAdapter.SimpleViewHolder> {
+
+        List<String> items;
+
+        SimpleRecyclerAdapter(List<String> items) {
+            this.items = items;
+        }
+
+        @Override
+        public SimpleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_1, parent, false);
+            return new SimpleViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(final SimpleViewHolder holder, int position) {
+            holder.name.setText(items.get(position));
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                    Intent intent = new Intent(MainActivity.this, LightNovelListActivity.class);
-                    startActivity(intent);
+                    switch (holder.getAdapterPosition()) {
+                        case 0:
+                            Intent intent = new Intent(MainActivity.this, LightNovelListActivity.class);
+                            startActivity(intent);
+                            break;
+                        case 1:
+                            Toast.makeText(view.getContext(), "TODO", Toast.LENGTH_SHORT).show();
+                        case 2:
+                            Toast.makeText(view.getContext(), "TODO", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        @Override
+        public int getItemCount() {
+            return items.size();
         }
 
-        return super.onOptionsItemSelected(item);
-    }
+        class SimpleViewHolder extends RecyclerView.ViewHolder {
 
-    public void createTestData() {
+            TextView name;
 
-        dbHelper.onUpgrade(dbHelper.getReadableDatabase(), 0, 0);
-
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        createGenres();
-        createLightNovels();
-
-        db.close();
-    }
-
-    public void createLightNovels() {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        long id = LightNovelDb.insert(db, "I Shall Seal The Heavens", "deathblade", "Desc", false, "wuxiaworld", "lkjfds");
-        LightNovelDb.insertLiteraryGenre(db, id, 3);
-        LightNovelDb.insertLiteraryGenre(db, id, 6);
-        LightNovelDb.insertLiteraryGenre(db, id, 4);
-        LightNovelDb.insertLiteraryGenre(db, id, 8);
-        LightNovelDb.insertLiteraryGenre(db, id, 18);
-        LightNovelDb.insertLiteraryGenre(db, id, 10);
-        LightNovelDb.insertLiteraryGenre(db, id, 21);
-        LightNovelDb.insertLiteraryGenre(db, id, 11);
-        id = LightNovelDb.insert(db, "Desolate Era", "Blizzard", "Desc", false, "wuxiaworld", "lkjfds");
-        LightNovelDb.insertLiteraryGenre(db, id, 5);
-        id = LightNovelDb.insert(db, "Martial World", "Er gen", "Desc", false, "gravitytales", "lkjfds");
-        LightNovelDb.insertLiteraryGenre(db, id, 9);
-        id = LightNovelDb.insert(db, "True Martial World", "Er gen", "Desc", false, "gravitytales", "lkjfds");
-        LightNovelDb.insertLiteraryGenre(db, id, 3);
-        id = LightNovelDb.insert(db, "Ancient Godly Monarch", "Baby Blueman", "Desc", false, "gravitytales", "lkjfds");
-        LightNovelDb.insertLiteraryGenre(db, id, 13);
-
-        db.close();
-    }
-
-    public void createGenres() {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        GenreDb.insert(db, "action");
-        GenreDb.insert(db, "adventure");
-        GenreDb.insert(db, "comedy");
-        GenreDb.insert(db, "doujinshi");
-        GenreDb.insert(db, "drama");
-        GenreDb.insert(db, "ecchi");
-        GenreDb.insert(db, "fantasy");
-        GenreDb.insert(db, "gender bender");
-        GenreDb.insert(db, "harem");
-        GenreDb.insert(db, "historical");
-        GenreDb.insert(db, "horror");
-        GenreDb.insert(db, "josei");
-        GenreDb.insert(db, "martial arts");
-        GenreDb.insert(db, "mature");
-        GenreDb.insert(db, "mecha");
-        GenreDb.insert(db, "mystery");
-        GenreDb.insert(db, "one shot");
-        GenreDb.insert(db, "psycological");
-        GenreDb.insert(db, "romance");
-        GenreDb.insert(db, "school life");
-        GenreDb.insert(db, "sci-fi");
-        GenreDb.insert(db, "seinen");
-        GenreDb.insert(db, "shoujo");
-        GenreDb.insert(db, "shoujo ai");
-        GenreDb.insert(db, "shounen");
-        GenreDb.insert(db, "shounen ai");
-        GenreDb.insert(db, "slice of life");
-        GenreDb.insert(db, "sports");
-        GenreDb.insert(db, "supernatural");
-        GenreDb.insert(db, "tragedy");
-        GenreDb.insert(db, "yaoi");
-        GenreDb.insert(db, "yuri");
-
-        db.close();
+            SimpleViewHolder(View itemView) {
+                super(itemView);
+                this.name = (TextView) itemView.findViewById(android.R.id.text1);
+            }
+        }
     }
 }
