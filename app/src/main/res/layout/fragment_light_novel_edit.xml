@@ -57,11 +57,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <EditText
+        <Button
             android:id="@+id/translatorSite"
-            android:hint="@string/translatorSite"
+            android:text="@string/translatorSite"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:drawableEnd="@drawable/action_submenu"
+            android:textAlignment="viewStart" />
 
         <Button
             android:id="@+id/genreSelection"
@@ -70,7 +73,6 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:drawableEnd="@drawable/action_submenu"
             android:textAlignment="viewStart"
-
             android:text="@string/edit_genres"/>
 
         <EditText

@@ -30,6 +30,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".LiteraryTrackerApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -45,21 +46,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".lightnovel.LightNovelListActivity"
-            android:label="@string/title_lightnovel_list"
+        <activity android:name=".lightnovel.LightNovelFormActivity"/>
+        <activity android:name=".lightnovel.LightNovelDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".genre.GenreSelectionActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".lightnovel.LightNovelDetailActivity"
-            android:label="@string/title_lightnovel_detail"
-            android:parentActivityName=".lightnovel.LightNovelListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.seregil13.literarytracker.lightnovel.LightNovelListActivity" />
-        </activity>
-        <activity android:name=".lightnovel.LightNovelFormActivity" />
-        <activity android:name=".GenreSelectionActivity"/>
+        <activity android:name=".lightnovel.LightNovelListActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".translator.TranslatorSelectionActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

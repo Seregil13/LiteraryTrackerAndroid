@@ -35,8 +35,13 @@
     <string name="completed">Completed?</string>
     <string name="description">Synopsis</string>
     <string name="translatorSite">Translated by</string>
+    <string name="edit_translator_site">Edit translator sites</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">confirm</string>
     <string name="edit_genres">Edit Genres</string>
+    <string name="new_genre_message">Enter a new genre</string>
+    <string name="new_translator_message">Enter a new translator</string>
+    <string name="new_genre_title">New Genre</string>
+    <string name="new_translator_title">New Translator</string>
 </resources>

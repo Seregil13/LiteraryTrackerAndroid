@@ -24,6 +24,8 @@
 
 package com.seregil13.literarytracker.lightnovel;
 
+import com.seregil13.literarytracker.realm.LightNovel;
+
 import java.util.List;
 
 /**
@@ -32,5 +34,5 @@ import java.util.List;
  */
 public interface OnDataFetched {
 
-    void setData(int id, String title, String author, String description, String completed, String translatorSite, List<String> genres);
+    void setData(LightNovel ln);
 }

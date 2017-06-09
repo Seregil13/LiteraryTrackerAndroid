@@ -50,6 +50,10 @@ public class LiteraryTrackerUtils {
     public static final int GENRE_SUCCESS_CODE = 1245;
     public static final int GENRE_CANCEL_CODE = 1246;
 
+    public static final int TRANSLATOR_SITE_REQUEST_CODE = 1247;
+    public static final int TRANSLATOR_SITE_SUCCESS_CODE = 1248;
+    public static final int TRANSLATOR_SITE_FAILURE_CODE = 1249;
+
     /**
      * Converts a {@link JSONArray} to an {@link ArrayList} of strings
      * @param jsonArray A JSON array that contains strings
